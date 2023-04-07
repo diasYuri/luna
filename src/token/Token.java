@@ -20,8 +20,8 @@ public class Token {
 
     @Override
     public String toString(){
-        return "[("+_line+","+ _column+ ") : <"
-                + _token_type.toString()  + ">] : "
-                + (_value != null ? _value : _token_type.value);
+        return _value == null
+                ? _token_type.value
+                : _token_type.toString() + ":" + _value;
     }
 }

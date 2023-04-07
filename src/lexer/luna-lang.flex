@@ -35,35 +35,68 @@ import token.TOKEN_TYPE;
 %init}
 
 
-BREAK_LINE  = \r|\n|\r\n
-WHITE_SPACE = {BREAK_LINE} | [ \t\f]
-NUMBER      = [0]|[1-9][:digit:]*
-ID          = [a-zA-Z]+
-COMMENT_LINE = "//" (.)* {BREAK_LINE}
+BREAK_LINE   = \r|\n|\r\n
+WHITE_SPACE  = {BREAK_LINE} | [ \t\f]
+INT          = [0]|[1-9][:digit:]*
+FLOAT        = [0-9]*[.]?[0-9]+
+ID           = [a-zA-Z]+
+COMMENT_LINE = "--" (.)* {BREAK_LINE}
 
 %state COMMENT
 
 %%
 
 <YYINITIAL> {
+    "Int"           { return token(TOKEN_TYPE.TYPE_INT); }
+    "Char"          { return token(TOKEN_TYPE.TYPE_CHAR); }
+    "Bool"          { return token(TOKEN_TYPE.TYPE_BOOL); }
+    "Float"         { return token(TOKEN_TYPE.TYPE_FLOAT); }
+    "data"          { return token(TOKEN_TYPE.DATA); }
+    "if"            { return token(TOKEN_TYPE.IF); }
+    "else"          { return token(TOKEN_TYPE.ELSE); }
+    "iterate"       { return token(TOKEN_TYPE.ITERATE); }
+    "read"          { return token(TOKEN_TYPE.READ); }
+    "print"         { return token(TOKEN_TYPE.PRINT); }
+    "return"        { return token(TOKEN_TYPE.RETURN); }
+    "true"          { return token(TOKEN_TYPE.TRUE); }
+    "false"         { return token(TOKEN_TYPE.FALSE); }
+    "null"          { return token(TOKEN_TYPE.NULL); }
+    "return"        { return token(TOKEN_TYPE.RETURN); }
+    "new"           { return token(TOKEN_TYPE.NEW); }
+
+    "::"            { return token(TOKEN_TYPE.DCOLON); }
+
     "{"             { return token(TOKEN_TYPE.LBRACE); }
     "}"             { return token(TOKEN_TYPE.RBRACE); }
     "("             { return token(TOKEN_TYPE.LPAREN); }
     ")"             { return token(TOKEN_TYPE.RPAREN); }
+    "["             { return token(TOKEN_TYPE.LSBRACK); }
+    "]"             { return token(TOKEN_TYPE.RSBRACK); }
     "="             { return token(TOKEN_TYPE.EQ);   }
+    ">"             { return token(TOKEN_TYPE.QT);   }
+    "<"             { return token(TOKEN_TYPE.LT);   }
+    ","             { return token(TOKEN_TYPE.COMMA); }
+    "."             { return token(TOKEN_TYPE.DOT); }
     ";"             { return token(TOKEN_TYPE.SEMI); }
+    ":"             { return token(TOKEN_TYPE.COLON); }
     "*"             { return token(TOKEN_TYPE.TIMES);}
+    "/"             { return token(TOKEN_TYPE.SLASH);}
+    "%"             { return token(TOKEN_TYPE.MOD);}
     "+"             { return token(TOKEN_TYPE.PLUS); }
-    "/*"            { yybegin(COMMENT);               }
+    "-"             { return token(TOKEN_TYPE.MINUS); }
+    "!"             { return token(TOKEN_TYPE.EXCL); }
+    "{-"            { yybegin(COMMENT);               }
+
     {WHITE_SPACE}   { /* Não faz nada  */             }
     {COMMENT_LINE}  {                                 }
     {ID}            { return token(TOKEN_TYPE.ID, yytext());   }
-    {NUMBER}        { return token(TOKEN_TYPE.NUM, yytext());  }
+    {INT}           { return token(TOKEN_TYPE.INT, yytext());  }
+    {FLOAT}         { return token(TOKEN_TYPE.FLOAT, yytext());  }
 }
 
 <COMMENT>{
-   "*/"     { yybegin(YYINITIAL); }
-   [^"*/"]* {                     }
+   "-}"     { yybegin(YYINITIAL); }
+   [^"-}"]* {                     }
 }
 
 
