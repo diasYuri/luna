@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String args[]) throws IOException{
-        Lexer lexer = new Lexer(new FileReader("test.luna"));
+        Lexer lexer = new Lexer(new FileReader(args[0]));
         for(var token = lexer.nextToken(); token != null; token = lexer.nextToken()){
             System.out.println(token);
         }

@@ -39,7 +39,7 @@ BREAK_LINE   = \r|\n|\r\n
 WHITE_SPACE  = {BREAK_LINE} | [ \t\f]
 INT          = [0]|[1-9][:digit:]*
 FLOAT        = [0-9]*[.]?[0-9]+
-ID           = [a-zA-Z]+
+ID           = [a-z][A-Z_a-z0-9]*
 COMMENT_LINE = "--" (.)* {BREAK_LINE}
 
 %state COMMENT
@@ -65,6 +65,10 @@ COMMENT_LINE = "--" (.)* {BREAK_LINE}
     "new"           { return token(TOKEN_TYPE.NEW); }
 
     "::"            { return token(TOKEN_TYPE.DCOLON); }
+    "=="            { return token(TOKEN_TYPE.DOUBLEEQ); }
+    "!="            { return token(TOKEN_TYPE.DIFF); }
+    "&&"            { return token(TOKEN_TYPE.ANDOP); }
+
 
     "{"             { return token(TOKEN_TYPE.LBRACE); }
     "}"             { return token(TOKEN_TYPE.RBRACE); }
