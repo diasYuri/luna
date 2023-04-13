@@ -14,26 +14,22 @@ public class Tests {
             paths
                     .filter(Files::isRegularFile)
                     .forEach(Tests::Test);
+            System.out.println("All tests passed");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void Test(Path path)  {
+    public static void Test(Path path) {
         Lexer lexer = null;
         try {
             lexer = new Lexer(new FileReader(path.toString()));
-            for(var token = lexer.nextToken(); token != null; token = lexer.nextToken()){
-                //System.out.println(token);
-            }
-            System.out.println("Total de tokens lidos " + lexer.numTokens());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            for(var token = lexer.nextToken(); token != null; token = lexer.nextToken()){}
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             System.out.println(path.toString());
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 }
