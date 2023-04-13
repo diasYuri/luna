@@ -39,6 +39,7 @@ BREAK_LINE   = \r|\n|\r\n
 WHITE_SPACE  = {BREAK_LINE} | [ \t\f]
 INT          = [0]|[1-9][:digit:]*
 FLOAT        = [0-9]*[.]?[0-9]+
+CHAR         = \'(ˆ[\']|\ |[\\\\]n|[\\\\]r|[\\\\]t|[\\\\]\'|[\w\d\S])'
 ID           = [a-z][A-Z_a-z0-9]*
 COMMENT_LINE = "--" (.)* {BREAK_LINE}
 
@@ -96,6 +97,7 @@ COMMENT_LINE = "--" (.)* {BREAK_LINE}
     {ID}            { return token(TOKEN_TYPE.ID, yytext());   }
     {INT}           { return token(TOKEN_TYPE.INT, yytext());  }
     {FLOAT}         { return token(TOKEN_TYPE.FLOAT, yytext());  }
+    {CHAR}          { return token(TOKEN_TYPE.CHAR, yytext());  }
 }
 
 <COMMENT>{

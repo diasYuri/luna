@@ -2,7 +2,6 @@
 the simple programming language
 
 
-
 ## Tarefas
 
 - [ ] Verificar expr

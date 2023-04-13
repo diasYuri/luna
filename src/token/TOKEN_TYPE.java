@@ -4,6 +4,7 @@ public enum TOKEN_TYPE {
     ID,
     INT,
     FLOAT,
+    CHAR,
     EQ("="),
     QT(">"),
     LT("<"),
