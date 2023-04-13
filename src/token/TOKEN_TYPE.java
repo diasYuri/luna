@@ -39,7 +39,10 @@ public enum TOKEN_TYPE {
     FALSE("false"),
     NULL("null"),
     NEW("new"),
-    EXCL("!");
+    EXCL("!"),
+    DOUBLEEQ("=="),
+    ANDOP("&&"),
+    DIFF("!=");
 
 
     public String value;
