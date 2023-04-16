@@ -1,3 +1,8 @@
+/*
+Alunos:
+Matheus Pedro Zancanella Barboza - 202035005
+Yuri Dias de Azevedo - 201935019
+ */
 
 package lexer;
 import token.Token;
