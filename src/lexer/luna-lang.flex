@@ -45,7 +45,7 @@ WHITE_SPACE  = {BREAK_LINE} | [ \t\f]
 INT          = [0]|[1-9][:digit:]*
 FLOAT        = [0-9]*[.]?[0-9]+
 CHAR         = \'(ˆ[\']|\ |[\\\\]n|[\\\\]r|[\\\\]t|[\\\\]\'|[\\\\]\\|[\w\d\S])'
-ID           = [A-Z_a-z0-9]+
+ID           = [A-Z][A-Z_a-z0-9]*
 COMMENT_LINE = "--" (.)* {BREAK_LINE}
 
 %state COMMENT
