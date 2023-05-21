@@ -3,6 +3,9 @@ grammar LunaLang;
 @parser::header
 {
     package src.parser;
+    import src.ast.*;
+    import src.ast.abstracts.*;
+    import src.ast.types.*;
 }
 
 @lexer::header
@@ -20,58 +23,59 @@ func : ID '(' params? ')' (':' type (',' type)*)? '{' cmd* '}';
 
 params : ID '::' type (',' ID '::' type)*;
 
-cmd : '{' cmd* '}'
-    | 'if' '(' exp ')' cmd
-    | 'if' '(' exp ')' cmd 'else' cmd
-    | 'iterate' '(' exp ')' cmd
-    | 'read' lvalue ';'
-    | 'print' exp ';'
-    | 'return' exp (','exp)* ';'
-    | lvalue '=' exp ';'
-    | ID '(' exps? ')' ('<' lvalue (',' lvalue)* '>')? ';'
+cmd : '{' cmd* '}'                      #cmdignore
+    | 'if' '(' exp ')' cmd              #if
+    | 'if' '(' exp ')' cmd 'else' cmd   #if
+    | 'iterate' '(' exp ')' cmd         #iterate
+    | 'read' lvalue ';'                 #read
+    | 'print' exp ';'                   #print
+    | 'return' exps ';'                 #return //'return' exp (','exp)* ';'
+    | lvalue '=' exp ';'                #attr
+    | ID '(' exps? ')' ('<' lvalue (',' lvalue)* '>')? ';' #call
     ;
 
 type : type '[]'
      | btype
      ;
 
-exp : exp '&&' exp
+exp : left=exp '&&' right=exp
     | rexp
     ;
 
-rexp : aexp '<' aexp
-     | rexp '==' aexp
-     | rexp '!=' aexp
+rexp : left=aexp '<' right=aexp
+     | l=rexp '==' right=aexp
+     | l=rexp '!=' right=aexp
      | aexp
      ;
 
-aexp : aexp '+' mexp
-     | aexp '-' mexp
-     | mexp
+aexp
+     : left=aexp '+' right=mexp #add
+     | left=aexp '-' right=mexp #sub
+     | mexp                     #aexpignore
      ;
 
-mexp : mexp '*' sexp
-     | mexp '/' sexp
-     | mexp '%' sexp
-     | sexp
+mexp
+     : left=mexp '*' right=sexp #mult
+     | left=mexp '/' right=sexp #div
+     | left=mexp '%' right=sexp #mod
+     | sexp                     #mexpignore
      ;
 
-sexp : '!' sexp         #nexp
-     | '-' sexp         #minusexp
+sexp : '!' right=sexp         #nexp
+     | '-' right=sexp         #minusexp
      | 'true'           #true
      | 'false'          #false
      | 'null'           #null
      | INT              #int
      | FLOAT            #float
      | CHAR             #char
-     | pexp             #ignore
+     | pexp             #pexpignore
      ;
 
-pexp : lvalue
-     | '(' exp ')'
-     | 'new' type '[' exp ']'
-     | ID '(' exps ')'
-     | ID '(' exps ')' '[' ']'
+pexp : '(' exp ')'                      #tuple
+     | 'new' type ('[' exp ']')?        #new
+     | ID '(' parameters=exps? ')' '[' offset=exp ']'     #callValue
+     | lvalue                           #lvalueignore
      ;
 
 exps: exp (',' exp)*;
@@ -145,7 +149,7 @@ TYPE_BOOL   : 'Bool';
 TYPE_FLOAT  : 'Float';
 
 BREAKLINE   : '\r'? '\n' -> skip;
-INT: [1-9][0-9]*;
+INT: [0]|[1-9][0-9]*;
 FLOAT: [0-9]+ '.' [0-9]+;
 CHAR: '\'' . '\'';
 WS: [ \t\n\r]+ -> skip;
