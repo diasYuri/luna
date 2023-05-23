@@ -42,10 +42,10 @@ exp : left=exp '&&' right=exp
     | rexp
     ;
 
-rexp : left=aexp '<' right=aexp
-     | l=rexp '==' right=aexp
-     | l=rexp '!=' right=aexp
-     | aexp
+rexp : left=aexp '<' right=aexp #lesser_than
+     | l=rexp '==' right=aexp   #equals
+     | l=rexp '!=' right=aexp   #notequals
+     | aexp                     #rexpignore
      ;
 
 aexp

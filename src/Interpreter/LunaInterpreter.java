@@ -10,7 +10,7 @@ import java.util.Stack;
 public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     private final HashMap<String, LunaLangParser.FuncContext> funcs = new HashMap<>();
     private final Stack<Object> operands = new Stack<>();
-    private final Stack<HashMap<String, Object>> scopeStack = new Stack<>();
+    private final Environment env = new Environment();
 
     @Override
     public Object visitExp(LunaLangParser.ExpContext ctx) {
@@ -34,7 +34,7 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             throw new RuntimeException( "Não há uma função chamada inicio ! abortando ! ");
         }
 
-        scopeStack.push(new HashMap<>());
+        env.newScope();
         return main.accept(this);
     }
 
@@ -59,9 +59,9 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
         }
 
-        scopeStack.push(new HashMap<>());
+        env.newScope();
         funcs.get(funcName).accept(this);
-        scopeStack.pop();
+        env.endCurrentScope();
 
         var response = (ArrayList)operands.pop();
         if(response == null){
@@ -76,13 +76,12 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     @Override
     public Object visitFunc(LunaLangParser.FuncContext ctx) {
         if(ctx.params() != null){
-            var scope = scopeStack.peek();
             ctx.params().accept(this);
             var params = (ArrayList)operands.pop();
             for (int i = params.size()-1; i >= 0; i--) {
                 var varName = ((Parameter)params.get(i)).name();
                 var value = operands.pop();
-                scope.put(varName, new Pointer(varName).setValue(value));
+                env.attributeVar(varName, value);
             }
         }
 
@@ -104,6 +103,18 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         ctx.exps().accept(this);
         var value = operands.peek();
         return value;
+    }
+
+    @Override
+    public Object visitIterate(LunaLangParser.IterateContext ctx) {
+        ctx.exp().accept(this);
+        var valueIterate = (Integer)operands.pop();
+        for (int i = 0; i < valueIterate; i++) {
+            env.newTemporaryScope();
+            ctx.cmd().accept(this);
+            env.endCurrentScope();
+        }
+        return null;
     }
 
     @Override
@@ -232,11 +243,9 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         ctx.exp().accept(this);
         var value = operands.pop();
 
-        var scope = scopeStack.peek();
-
         if(objPointer instanceof Pointer pointer){
             pointer.setValue(value);
-            scope.put(pointer.name(), pointer);
+            env.attributePointer(pointer);
         }
 
         return value;
@@ -245,18 +254,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     @Override
     public Object visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) {
         var name = ctx.ID().getText();
+        var pointer = env.getPointer(name);
+        operands.push(pointer);
+        return pointer;
 
-        var scope = scopeStack.peek();
-
-        if(scope.containsKey(name)){
-            var pointer = scope.get(name);
-            operands.push(pointer);
-            return pointer;
-        }else{
-            var pointer = new Pointer(name);
-            operands.push(pointer);
-            return pointer;
-        }
     }
 
     @Override
@@ -265,6 +266,30 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         var pointer = (Pointer)operands.pop();
         operands.push(pointer.value());
         return pointer.value();
+    }
+
+    @Override
+    public Object visitMinusexp(LunaLangParser.MinusexpContext ctx) {
+        ctx.sexp().accept(this);
+        var value = (Number)operands.pop();
+
+        if(value instanceof Float valuef){
+            Float resultValue = valuef * -1;
+            operands.push(resultValue);
+            return resultValue;
+        }
+
+        Integer resultValue = value.intValue() * -1;
+        operands.push(resultValue);
+        return resultValue;
+    }
+
+    @Override
+    public Object visitNexp(LunaLangParser.NexpContext ctx) {
+        ctx.sexp().accept(this);
+        var value = !(Boolean)operands.pop();
+        operands.push(value);
+        return value;
     }
 
     @Override
@@ -279,6 +304,20 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     public Object visitFloat(LunaLangParser.FloatContext ctx) {
         String valueStr = ctx.FLOAT().getText();
         Float value = Float.parseFloat(valueStr);
+        operands.push(value);
+        return value;
+    }
+
+    @Override
+    public Object visitTrue(LunaLangParser.TrueContext ctx) {
+        Boolean value = true;
+        operands.push(value);
+        return value;
+    }
+
+    @Override
+    public Object visitFalse(LunaLangParser.FalseContext ctx) {
+        Boolean value = false;
         operands.push(value);
         return value;
     }

@@ -114,11 +114,33 @@ public interface LunaLangVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExp(LunaLangParser.ExpContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LunaLangParser#rexp}.
+	 * Visit a parse tree produced by the {@code lesser_than}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRexp(LunaLangParser.RexpContext ctx);
+	T visitLesser_than(LunaLangParser.Lesser_thanContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code equals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEquals(LunaLangParser.EqualsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code notequals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNotequals(LunaLangParser.NotequalsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code rexpignore}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRexpignore(LunaLangParser.RexpignoreContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code add}
 	 * labeled alternative in {@link LunaLangParser#aexp}.

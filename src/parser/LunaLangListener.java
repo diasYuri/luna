@@ -179,15 +179,53 @@ public interface LunaLangListener extends ParseTreeListener {
 	 */
 	void exitExp(LunaLangParser.ExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LunaLangParser#rexp}.
+	 * Enter a parse tree produced by the {@code lesser_than}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
 	 * @param ctx the parse tree
 	 */
-	void enterRexp(LunaLangParser.RexpContext ctx);
+	void enterLesser_than(LunaLangParser.Lesser_thanContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link LunaLangParser#rexp}.
+	 * Exit a parse tree produced by the {@code lesser_than}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
 	 * @param ctx the parse tree
 	 */
-	void exitRexp(LunaLangParser.RexpContext ctx);
+	void exitLesser_than(LunaLangParser.Lesser_thanContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code equals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void enterEquals(LunaLangParser.EqualsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code equals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void exitEquals(LunaLangParser.EqualsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code notequals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void enterNotequals(LunaLangParser.NotequalsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code notequals}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void exitNotequals(LunaLangParser.NotequalsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code rexpignore}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void enterRexpignore(LunaLangParser.RexpignoreContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code rexpignore}
+	 * labeled alternative in {@link LunaLangParser#rexp}.
+	 * @param ctx the parse tree
+	 */
+	void exitRexpignore(LunaLangParser.RexpignoreContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code add}
 	 * labeled alternative in {@link LunaLangParser#aexp}.

@@ -1,17 +1,18 @@
 // Generated from ../src/parser/LunaLang.g4 by ANTLR 4.8
 
     package src.parser;
+    import src.ast.*;
+    import src.ast.abstracts.*;
+    import src.ast.types.*;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class LunaLangParser extends Parser {
@@ -946,7 +947,17 @@ public class LunaLangParser extends Parser {
 	}
 
 	public static class RexpContext extends ParserRuleContext {
-		public RexpContext l;
+		public RexpContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_rexp; }
+	 
+		public RexpContext() { }
+		public void copyFrom(RexpContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class Lesser_thanContext extends RexpContext {
 		public AexpContext left;
 		public AexpContext right;
 		public List<AexpContext> aexp() {
@@ -955,16 +966,53 @@ public class LunaLangParser extends Parser {
 		public AexpContext aexp(int i) {
 			return getRuleContext(AexpContext.class,i);
 		}
+		public Lesser_thanContext(RexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLesser_than(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class EqualsContext extends RexpContext {
+		public RexpContext l;
+		public AexpContext right;
 		public RexpContext rexp() {
 			return getRuleContext(RexpContext.class,0);
 		}
-		public RexpContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
+		public AexpContext aexp() {
+			return getRuleContext(AexpContext.class,0);
 		}
-		@Override public int getRuleIndex() { return RULE_rexp; }
+		public EqualsContext(RexpContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitRexp(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitEquals(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class NotequalsContext extends RexpContext {
+		public RexpContext l;
+		public AexpContext right;
+		public RexpContext rexp() {
+			return getRuleContext(RexpContext.class,0);
+		}
+		public AexpContext aexp() {
+			return getRuleContext(AexpContext.class,0);
+		}
+		public NotequalsContext(RexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitNotequals(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class RexpignoreContext extends RexpContext {
+		public AexpContext aexp() {
+			return getRuleContext(AexpContext.class,0);
+		}
+		public RexpignoreContext(RexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitRexpignore(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -989,16 +1037,23 @@ public class LunaLangParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
 			case 1:
 				{
+				_localctx = new Lesser_thanContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+
 				setState(189);
-				((RexpContext)_localctx).left = aexp(0);
+				((Lesser_thanContext)_localctx).left = aexp(0);
 				setState(190);
 				match(T__16);
 				setState(191);
-				((RexpContext)_localctx).right = aexp(0);
+				((Lesser_thanContext)_localctx).right = aexp(0);
 				}
 				break;
 			case 2:
 				{
+				_localctx = new RexpignoreContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(193);
 				aexp(0);
 				}
@@ -1018,30 +1073,28 @@ public class LunaLangParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
 					case 1:
 						{
-						_localctx = new RexpContext(_parentctx, _parentState);
-						_localctx.l = _prevctx;
-						_localctx.l = _prevctx;
+						_localctx = new EqualsContext(new RexpContext(_parentctx, _parentState));
+						((EqualsContext)_localctx).l = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_rexp);
 						setState(196);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(197);
 						match(T__20);
 						setState(198);
-						((RexpContext)_localctx).right = aexp(0);
+						((EqualsContext)_localctx).right = aexp(0);
 						}
 						break;
 					case 2:
 						{
-						_localctx = new RexpContext(_parentctx, _parentState);
-						_localctx.l = _prevctx;
-						_localctx.l = _prevctx;
+						_localctx = new NotequalsContext(new RexpContext(_parentctx, _parentState));
+						((NotequalsContext)_localctx).l = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_rexp);
 						setState(199);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(200);
 						match(T__21);
 						setState(201);
-						((RexpContext)_localctx).right = aexp(0);
+						((NotequalsContext)_localctx).right = aexp(0);
 						}
 						break;
 					}
