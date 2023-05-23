@@ -253,12 +253,12 @@ public interface LunaLangVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCallValue(LunaLangParser.CallValueContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code lvalueignore}
+	 * Visit a parse tree produced by the {@code pexp_lvalue}
 	 * labeled alternative in {@link LunaLangParser#pexp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLvalueignore(LunaLangParser.LvalueignoreContext ctx);
+	T visitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LunaLangParser#exps}.
 	 * @param ctx the parse tree
@@ -266,11 +266,26 @@ public interface LunaLangVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExps(LunaLangParser.ExpsContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LunaLangParser#lvalue}.
+	 * Visit a parse tree produced by the {@code lvalue_id_arr}
+	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLvalue(LunaLangParser.LvalueContext ctx);
+	T visitLvalue_id_arr(LunaLangParser.Lvalue_id_arrContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code lvalue_id}
+	 * labeled alternative in {@link LunaLangParser#lvalue}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLvalue_id(LunaLangParser.Lvalue_idContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code lvalue_access}
+	 * labeled alternative in {@link LunaLangParser#lvalue}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLvalue_access(LunaLangParser.Lvalue_accessContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LunaLangParser#btype}.
 	 * @param ctx the parse tree

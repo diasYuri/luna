@@ -1,9 +1,6 @@
 // Generated from ../src/parser/LunaLang.g4 by ANTLR 4.8
 
     package src.parser;
-    import src.ast.*;
-    import src.ast.abstracts.*;
-    import src.ast.types.*;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -267,7 +264,7 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalueignore(LunaLangParser.LvalueignoreContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -281,7 +278,21 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue(LunaLangParser.LvalueContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalue_id_arr(LunaLangParser.Lvalue_id_arrContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitLvalue_access(LunaLangParser.Lvalue_accessContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

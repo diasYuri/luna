@@ -74,15 +74,15 @@ sexp : '!' right=sexp         #nexp
 
 pexp : '(' exp ')'                      #tuple
      | 'new' type ('[' exp ']')?        #new
-     | ID '(' parameters=exps? ')' '[' offset=exp ']'     #callValue
-     | lvalue                           #lvalueignore
+     | ID '(' parameters=exps? ')' '[' offset=exp ']'    #callValue
+     | lvalue                           #pexp_lvalue
      ;
 
 exps: exp (',' exp)*;
 
-lvalue : ID
-       | lvalue '[' exp ']'
-       | lvalue'.'ID
+lvalue : ID                     #lvalue_id
+       | lvalue '[' exp ']'     #lvalue_id_arr
+       | lvalue'.'ID            #lvalue_access
        ;
 
 btype: TYPE_INT

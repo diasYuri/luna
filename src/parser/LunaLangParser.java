@@ -1,18 +1,17 @@
 // Generated from ../src/parser/LunaLang.g4 by ANTLR 4.8
 
     package src.parser;
-    import src.ast.*;
-    import src.ast.abstracts.*;
-    import src.ast.types.*;
 
-import org.antlr.v4.runtime.atn.*;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNDeserializer;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class LunaLangParser extends Parser {
@@ -1575,6 +1574,17 @@ public class LunaLangParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class Pexp_lvalueContext extends PexpContext {
+		public LvalueContext lvalue() {
+			return getRuleContext(LvalueContext.class,0);
+		}
+		public Pexp_lvalueContext(PexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitPexp_lvalue(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class TupleContext extends PexpContext {
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
@@ -1614,17 +1624,6 @@ public class LunaLangParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitCallValue(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class LvalueignoreContext extends PexpContext {
-		public LvalueContext lvalue() {
-			return getRuleContext(LvalueContext.class,0);
-		}
-		public LvalueignoreContext(PexpContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalueignore(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1702,7 +1701,7 @@ public class LunaLangParser extends Parser {
 				}
 				break;
 			case 4:
-				_localctx = new LvalueignoreContext(_localctx);
+				_localctx = new Pexp_lvalueContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(273);
@@ -1779,20 +1778,48 @@ public class LunaLangParser extends Parser {
 	}
 
 	public static class LvalueContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
+		public LvalueContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_lvalue; }
+	 
+		public LvalueContext() { }
+		public void copyFrom(LvalueContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class Lvalue_id_arrContext extends LvalueContext {
 		public LvalueContext lvalue() {
 			return getRuleContext(LvalueContext.class,0);
 		}
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
-		public LvalueContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_lvalue; }
+		public Lvalue_id_arrContext(LvalueContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_id_arr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class Lvalue_idContext extends LvalueContext {
+		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
+		public Lvalue_idContext(LvalueContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_id(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class Lvalue_accessContext extends LvalueContext {
+		public LvalueContext lvalue() {
+			return getRuleContext(LvalueContext.class,0);
+		}
+		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
+		public Lvalue_accessContext(LvalueContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_access(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1813,6 +1840,10 @@ public class LunaLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
+			_localctx = new Lvalue_idContext(_localctx);
+			_ctx = _localctx;
+			_prevctx = _localctx;
+
 			setState(285);
 			match(ID);
 			}
@@ -1830,7 +1861,7 @@ public class LunaLangParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
 					case 1:
 						{
-						_localctx = new LvalueContext(_parentctx, _parentState);
+						_localctx = new Lvalue_id_arrContext(new LvalueContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_lvalue);
 						setState(287);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
@@ -1844,7 +1875,7 @@ public class LunaLangParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new LvalueContext(_parentctx, _parentState);
+						_localctx = new Lvalue_accessContext(new LvalueContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_lvalue);
 						setState(292);
 						if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
