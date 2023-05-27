@@ -1,11 +1,10 @@
 package src.ast;
 
 
-import src.ast.abstracts.BinOp;
 import src.ast.abstracts.Expr;
-import src.ast.abstracts.Node;
 
-public class False extends Node {
+
+public class False extends Expr {
 
     public False(int l, int c){
         super(l,c);
