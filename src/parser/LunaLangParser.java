@@ -27,7 +27,8 @@ public class LunaLangParser extends Parser {
 		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
 		T__24=25, T__25=26, T__26=27, T__27=28, T__28=29, T__29=30, T__30=31, 
 		T__31=32, T__32=33, T__33=34, T__34=35, TYPE_INT=36, TYPE_CHAR=37, TYPE_BOOL=38, 
-		TYPE_FLOAT=39, BREAKLINE=40, INT=41, FLOAT=42, CHAR=43, WS=44, ID=45;
+		TYPE_FLOAT=39, BREAKLINE=40, INT=41, FLOAT=42, CHAR=43, WS=44, ID=45, 
+		LINE_COMMENT=46, COMMENT=47;
 	public static final int
 		RULE_prog = 0, RULE_data = 1, RULE_decl = 2, RULE_func = 3, RULE_params = 4, 
 		RULE_cmd = 5, RULE_type = 6, RULE_exp = 7, RULE_rexp = 8, RULE_aexp = 9, 
@@ -57,7 +58,7 @@ public class LunaLangParser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			"TYPE_INT", "TYPE_CHAR", "TYPE_BOOL", "TYPE_FLOAT", "BREAKLINE", "INT", 
-			"FLOAT", "CHAR", "WS", "ID"
+			"FLOAT", "CHAR", "WS", "ID", "LINE_COMMENT", "COMMENT"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -479,24 +480,6 @@ public class LunaLangParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class CallContext extends CmdContext {
-		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
-		public ExpsContext exps() {
-			return getRuleContext(ExpsContext.class,0);
-		}
-		public List<LvalueContext> lvalue() {
-			return getRuleContexts(LvalueContext.class);
-		}
-		public LvalueContext lvalue(int i) {
-			return getRuleContext(LvalueContext.class,i);
-		}
-		public CallContext(CmdContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitCall(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class PrintContext extends CmdContext {
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
@@ -534,6 +517,8 @@ public class LunaLangParser extends Parser {
 		}
 	}
 	public static class IfContext extends CmdContext {
+		public CmdContext cmd_if;
+		public CmdContext cmd_else;
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
@@ -589,6 +574,25 @@ public class LunaLangParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class Call_attrContext extends CmdContext {
+		public ExpsContext parameters;
+		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
+		public List<LvalueContext> lvalue() {
+			return getRuleContexts(LvalueContext.class);
+		}
+		public LvalueContext lvalue(int i) {
+			return getRuleContext(LvalueContext.class,i);
+		}
+		public ExpsContext exps() {
+			return getRuleContext(ExpsContext.class,0);
+		}
+		public Call_attrContext(CmdContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitCall_attr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 
 	public final CmdContext cmd() throws RecognitionException {
 		CmdContext _localctx = new CmdContext(_ctx, getState());
@@ -635,7 +639,7 @@ public class LunaLangParser extends Parser {
 				setState(111);
 				match(T__6);
 				setState(112);
-				cmd();
+				((IfContext)_localctx).cmd_if = cmd();
 				}
 				break;
 			case 3:
@@ -651,11 +655,11 @@ public class LunaLangParser extends Parser {
 				setState(117);
 				match(T__6);
 				setState(118);
-				cmd();
+				((IfContext)_localctx).cmd_if = cmd();
 				setState(119);
 				match(T__10);
 				setState(120);
-				cmd();
+				((IfContext)_localctx).cmd_else = cmd();
 				}
 				break;
 			case 4:
@@ -725,7 +729,7 @@ public class LunaLangParser extends Parser {
 				}
 				break;
 			case 9:
-				_localctx = new CallContext(_localctx);
+				_localctx = new Call_attrContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(145);
@@ -738,7 +742,7 @@ public class LunaLangParser extends Parser {
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__5) | (1L << T__23) | (1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << T__31) | (1L << INT) | (1L << FLOAT) | (1L << CHAR) | (1L << ID))) != 0)) {
 					{
 					setState(147);
-					exps();
+					((Call_attrContext)_localctx).parameters = exps();
 					}
 				}
 
@@ -792,19 +796,35 @@ public class LunaLangParser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public BtypeContext btype() {
-			return getRuleContext(BtypeContext.class,0);
-		}
-		public TypeContext type() {
-			return getRuleContext(TypeContext.class,0);
-		}
 		public TypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
+	 
+		public TypeContext() { }
+		public void copyFrom(TypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ArrayTypeContext extends TypeContext {
+		public TypeContext type() {
+			return getRuleContext(TypeContext.class,0);
+		}
+		public ArrayTypeContext(TypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitType(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitArrayType(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class TypeignoreContext extends TypeContext {
+		public BtypeContext btype() {
+			return getRuleContext(BtypeContext.class,0);
+		}
+		public TypeignoreContext(TypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitTypeignore(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -825,6 +845,10 @@ public class LunaLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
+			_localctx = new TypeignoreContext(_localctx);
+			_ctx = _localctx;
+			_prevctx = _localctx;
+
 			setState(168);
 			btype();
 			}
@@ -838,7 +862,7 @@ public class LunaLangParser extends Parser {
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new TypeContext(_parentctx, _parentState);
+					_localctx = new ArrayTypeContext(new TypeContext(_parentctx, _parentState));
 					pushNewRecursionContext(_localctx, _startState, RULE_type);
 					setState(170);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
@@ -865,24 +889,40 @@ public class LunaLangParser extends Parser {
 	}
 
 	public static class ExpContext extends ParserRuleContext {
+		public ExpContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_exp; }
+	 
+		public ExpContext() { }
+		public void copyFrom(ExpContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class AndexpContext extends ExpContext {
 		public ExpContext left;
 		public ExpContext right;
-		public RexpContext rexp() {
-			return getRuleContext(RexpContext.class,0);
-		}
 		public List<ExpContext> exp() {
 			return getRuleContexts(ExpContext.class);
 		}
 		public ExpContext exp(int i) {
 			return getRuleContext(ExpContext.class,i);
 		}
-		public ExpContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_exp; }
+		public AndexpContext(ExpContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitExp(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitAndexp(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExpignoreContext extends ExpContext {
+		public RexpContext rexp() {
+			return getRuleContext(RexpContext.class,0);
+		}
+		public ExpignoreContext(ExpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitExpignore(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -903,6 +943,10 @@ public class LunaLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
+			_localctx = new ExpignoreContext(_localctx);
+			_ctx = _localctx;
+			_prevctx = _localctx;
+
 			setState(178);
 			rexp(0);
 			}
@@ -916,16 +960,15 @@ public class LunaLangParser extends Parser {
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new ExpContext(_parentctx, _parentState);
-					_localctx.left = _prevctx;
-					_localctx.left = _prevctx;
+					_localctx = new AndexpContext(new ExpContext(_parentctx, _parentState));
+					((AndexpContext)_localctx).left = _prevctx;
 					pushNewRecursionContext(_localctx, _startState, RULE_exp);
 					setState(180);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 					setState(181);
 					match(T__19);
 					setState(182);
-					((ExpContext)_localctx).right = exp(3);
+					((AndexpContext)_localctx).right = exp(3);
 					}
 					} 
 				}
@@ -1650,6 +1693,7 @@ public class LunaLangParser extends Parser {
 		}
 	}
 	public static class NewContext extends PexpContext {
+		public ExpContext arr_exp;
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -1717,7 +1761,7 @@ public class LunaLangParser extends Parser {
 					setState(257);
 					match(T__32);
 					setState(258);
-					exp(0);
+					((NewContext)_localctx).arr_exp = exp(0);
 					setState(259);
 					match(T__33);
 					}
@@ -1841,26 +1885,26 @@ public class LunaLangParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class Lvalue_id_arrContext extends LvalueContext {
-		public LvalueContext lvalue() {
-			return getRuleContext(LvalueContext.class,0);
-		}
-		public ExpContext exp() {
-			return getRuleContext(ExpContext.class,0);
-		}
-		public Lvalue_id_arrContext(LvalueContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_id_arr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class Lvalue_idContext extends LvalueContext {
 		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
 		public Lvalue_idContext(LvalueContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_id(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class Lvalue_arrContext extends LvalueContext {
+		public LvalueContext lvalue() {
+			return getRuleContext(LvalueContext.class,0);
+		}
+		public ExpContext exp() {
+			return getRuleContext(ExpContext.class,0);
+		}
+		public Lvalue_arrContext(LvalueContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_arr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1914,7 +1958,7 @@ public class LunaLangParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
 					case 1:
 						{
-						_localctx = new Lvalue_id_arrContext(new LvalueContext(_parentctx, _parentState));
+						_localctx = new Lvalue_arrContext(new LvalueContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_lvalue);
 						setState(287);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
@@ -2076,35 +2120,35 @@ public class LunaLangParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3/\u0131\4\2\t\2\4"+
-		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\7\2$\n"+
-		"\2\f\2\16\2\'\13\2\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\3\3\3\3\3\3"+
-		"\7\3\65\n\3\f\3\16\38\13\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\5\5"+
-		"D\n\5\3\5\3\5\3\5\3\5\3\5\7\5K\n\5\f\5\16\5N\13\5\5\5P\n\5\3\5\3\5\7\5"+
-		"T\n\5\f\5\16\5W\13\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6b\n\6\f\6"+
-		"\16\6e\13\6\3\7\3\7\7\7i\n\7\f\7\16\7l\13\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\61\u0131\4\2\t\2"+
+		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
+		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\3\2\7\2"+
+		"$\n\2\f\2\16\2\'\13\2\3\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\3\3\3\3"+
+		"\3\3\7\3\65\n\3\f\3\16\38\13\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5"+
+		"\5\5D\n\5\3\5\3\5\3\5\3\5\3\5\7\5K\n\5\f\5\16\5N\13\5\5\5P\n\5\3\5\3\5"+
+		"\7\5T\n\5\f\5\16\5W\13\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6b\n\6"+
+		"\f\6\16\6e\13\6\3\7\3\7\7\7i\n\7\f\7\16\7l\13\7\3\7\3\7\3\7\3\7\3\7\3"+
 		"\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7"+
-		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5"+
-		"\7\u0097\n\7\3\7\3\7\3\7\3\7\3\7\7\7\u009e\n\7\f\7\16\7\u00a1\13\7\3\7"+
-		"\3\7\5\7\u00a5\n\7\3\7\5\7\u00a8\n\7\3\b\3\b\3\b\3\b\3\b\7\b\u00af\n\b"+
-		"\f\b\16\b\u00b2\13\b\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u00ba\n\t\f\t\16\t\u00bd"+
-		"\13\t\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u00c5\n\n\3\n\3\n\3\n\3\n\3\n\3\n\7"+
-		"\n\u00cd\n\n\f\n\16\n\u00d0\13\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3"+
-		"\13\3\13\7\13\u00db\n\13\f\13\16\13\u00de\13\13\3\f\3\f\3\f\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\3\f\3\f\3\f\7\f\u00ec\n\f\f\f\16\f\u00ef\13\f\3\r\3\r\3"+
-		"\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00fc\n\r\3\16\3\16\3\16\3\16\3"+
-		"\16\3\16\3\16\3\16\3\16\3\16\5\16\u0108\n\16\3\16\3\16\3\16\5\16\u010d"+
-		"\n\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u0115\n\16\3\17\3\17\3\17\7\17"+
-		"\u011a\n\17\f\17\16\17\u011d\13\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20"+
-		"\3\20\3\20\3\20\3\20\7\20\u012a\n\20\f\20\16\20\u012d\13\20\3\21\3\21"+
-		"\3\21\2\b\16\20\22\24\26\36\22\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36"+
-		" \2\3\4\2&)//\2\u014e\2%\3\2\2\2\4\60\3\2\2\2\6;\3\2\2\2\b@\3\2\2\2\n"+
-		"Z\3\2\2\2\f\u00a7\3\2\2\2\16\u00a9\3\2\2\2\20\u00b3\3\2\2\2\22\u00c4\3"+
-		"\2\2\2\24\u00d1\3\2\2\2\26\u00df\3\2\2\2\30\u00fb\3\2\2\2\32\u0114\3\2"+
-		"\2\2\34\u0116\3\2\2\2\36\u011e\3\2\2\2 \u012e\3\2\2\2\"$\5\4\3\2#\"\3"+
-		"\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&+\3\2\2\2\'%\3\2\2\2(*\5\b\5\2)"+
-		"(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\2\2\3"+
+		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
+		"\7\5\7\u0097\n\7\3\7\3\7\3\7\3\7\3\7\7\7\u009e\n\7\f\7\16\7\u00a1\13\7"+
+		"\3\7\3\7\5\7\u00a5\n\7\3\7\5\7\u00a8\n\7\3\b\3\b\3\b\3\b\3\b\7\b\u00af"+
+		"\n\b\f\b\16\b\u00b2\13\b\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u00ba\n\t\f\t\16"+
+		"\t\u00bd\13\t\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u00c5\n\n\3\n\3\n\3\n\3\n\3"+
+		"\n\3\n\7\n\u00cd\n\n\f\n\16\n\u00d0\13\n\3\13\3\13\3\13\3\13\3\13\3\13"+
+		"\3\13\3\13\3\13\7\13\u00db\n\13\f\13\16\13\u00de\13\13\3\f\3\f\3\f\3\f"+
+		"\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\7\f\u00ec\n\f\f\f\16\f\u00ef\13\f\3\r"+
+		"\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00fc\n\r\3\16\3\16\3\16"+
+		"\3\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u0108\n\16\3\16\3\16\3\16\5\16"+
+		"\u010d\n\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u0115\n\16\3\17\3\17\3"+
+		"\17\7\17\u011a\n\17\f\17\16\17\u011d\13\17\3\20\3\20\3\20\3\20\3\20\3"+
+		"\20\3\20\3\20\3\20\3\20\3\20\7\20\u012a\n\20\f\20\16\20\u012d\13\20\3"+
+		"\21\3\21\3\21\2\b\16\20\22\24\26\36\22\2\4\6\b\n\f\16\20\22\24\26\30\32"+
+		"\34\36 \2\3\4\2&)//\2\u014e\2%\3\2\2\2\4\60\3\2\2\2\6;\3\2\2\2\b@\3\2"+
+		"\2\2\nZ\3\2\2\2\f\u00a7\3\2\2\2\16\u00a9\3\2\2\2\20\u00b3\3\2\2\2\22\u00c4"+
+		"\3\2\2\2\24\u00d1\3\2\2\2\26\u00df\3\2\2\2\30\u00fb\3\2\2\2\32\u0114\3"+
+		"\2\2\2\34\u0116\3\2\2\2\36\u011e\3\2\2\2 \u012e\3\2\2\2\"$\5\4\3\2#\""+
+		"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&+\3\2\2\2\'%\3\2\2\2(*\5\b\5\2"+
+		")(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7\2\2\3"+
 		"/\3\3\2\2\2\60\61\7\3\2\2\61\62\7/\2\2\62\66\7\4\2\2\63\65\5\6\4\2\64"+
 		"\63\3\2\2\2\658\3\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\679\3\2\2\28\66\3"+
 		"\2\2\29:\7\5\2\2:\5\3\2\2\2;<\7/\2\2<=\7\6\2\2=>\5\16\b\2>?\7\7\2\2?\7"+

@@ -23,23 +23,23 @@ func : ID '(' params? ')' (':' type (',' type)*)? '{' cmd* '}';
 
 params : ID '::' type (',' ID '::' type)*;
 
-cmd : '{' cmd* '}'                      #cmdignore
-    | 'if' '(' exp ')' cmd              #if
-    | 'if' '(' exp ')' cmd 'else' cmd   #if
-    | 'iterate' '(' exp ')' cmd         #iterate
-    | 'read' lvalue ';'                 #read
-    | 'print' exp ';'                   #print
-    | 'return' exps ';'                 #return //'return' exp (','exp)* ';'
-    | lvalue '=' exp ';'                #attr
-    | ID '(' exps? ')' ('<' lvalue (',' lvalue)* '>')? ';' #call
+cmd : '{' cmd* '}'                                      #cmdignore
+    | 'if' '(' exp ')' cmd_if=cmd                       #if
+    | 'if' '(' exp ')' cmd_if=cmd 'else' cmd_else=cmd   #if
+    | 'iterate' '(' exp ')' cmd                         #iterate
+    | 'read' lvalue ';'                                 #read
+    | 'print' exp ';'                                   #print
+    | 'return' exps ';'                                 #return //'return' exp (','exp)* ';'
+    | lvalue '=' exp ';'                                #attr
+    | ID '(' parameters=exps? ')' ('<' lvalue (',' lvalue)* '>')? ';' #call_attr
     ;
 
-type : type '[]'
-     | btype
+type : type '[]' #arrayType
+     | btype     #typeignore
      ;
 
-exp : left=exp '&&' right=exp
-    | rexp
+exp : left=exp '&&' right=exp   #andexp
+    | rexp                      #expignore
     ;
 
 rexp : left=aexp '<' right=aexp #lesser_than
@@ -72,16 +72,16 @@ sexp : '!' right=sexp         #nexp
      | pexp             #pexpignore
      ;
 
-pexp : '(' exp ')'                      #tuple
-     | 'new' type ('[' exp ']')?        #new
+pexp : '(' exp ')'                                       #tuple
+     | 'new' type ('[' arr_exp=exp ']')?                 #new
      | ID '(' parameters=exps? ')' '[' offset=exp ']'    #callValue
-     | lvalue                           #pexp_lvalue
+     | lvalue                                            #pexp_lvalue
      ;
 
 exps: exp (',' exp)*;
 
 lvalue : ID                     #lvalue_id
-       | lvalue '[' exp ']'     #lvalue_id_arr
+       | lvalue '[' exp ']'     #lvalue_arr
        | lvalue'.'ID            #lvalue_access
        ;
 
@@ -151,7 +151,9 @@ TYPE_FLOAT  : 'Float';
 BREAKLINE   : '\r'? '\n' -> skip;
 INT: [0]|[1-9][0-9]*;
 FLOAT: [0-9]+ '.' [0-9]+;
-CHAR: '\'' . '\'';
+CHAR: '\'' . '\'' | '\'\\n\'' | '\'\\r\'' | '\'\\t\'' | '\'\\\\\'';
 WS: [ \t\n\r]+ -> skip;
 ID: [a-zA-Z_][a-zA-Z_0-9]*;
+LINE_COMMENT : '--' ~('\r' | '\n')* BREAKLINE -> skip;
+COMMENT: '{-' .*?  '-}' -> skip;
 // TODO: adicionar comentário

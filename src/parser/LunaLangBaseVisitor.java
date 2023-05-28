@@ -106,21 +106,35 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCall(LunaLangParser.CallContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCall_attr(LunaLangParser.Call_attrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitType(LunaLangParser.TypeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitArrayType(LunaLangParser.ArrayTypeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitExp(LunaLangParser.ExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTypeignore(LunaLangParser.TypeignoreContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAndexp(LunaLangParser.AndexpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitExpignore(LunaLangParser.ExpignoreContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -302,14 +316,14 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue_id_arr(LunaLangParser.Lvalue_id_arrContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalue_arr(LunaLangParser.Lvalue_arrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
