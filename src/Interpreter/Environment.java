@@ -41,9 +41,7 @@ class TemporaryScope extends Scope {
     }
     public TemporaryScope setContext(Scope currentScope){
         this.memory.clear();
-        for(var m : currentScope.memory.entrySet()){
-            this.memory.put(m.getKey(), new RefPointer(m.getValue().getValue()));
-        }
+        this.memory.putAll(currentScope.memory);
         return this;
     }
 
