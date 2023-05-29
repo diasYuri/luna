@@ -1,18 +1,16 @@
 package src.Interpreter;
 
+import src.types.pointers.RefPointer;
+
 import java.util.HashMap;
 import java.util.Stack;
 
 public class Environment {
     private final Stack<Object> operands = new Stack<>();
     private final Stack<Scope> scopeStack = new Stack<>();
-    private final TemporaryScope temporaryScope = new TemporaryScope();
 
-    public Pointer getPointer(String name){
+    public RefPointer getPointer(String name){
         return currentScope().GetPointer(name);
-    }
-    public void attributePointer(Pointer pointer){
-        currentScope().attributePointer(pointer);
     }
     public void attributeVar(String name, Object value){
         var pointer = this.getPointer(name);
@@ -24,7 +22,7 @@ public class Environment {
     }
 
     public void newTemporaryScope(){
-        scopeStack.push(temporaryScope.refresh(currentScope()));
+        scopeStack.push(TemporaryScope.create(currentScope()));
     }
 
     public void endCurrentScope(){
@@ -38,37 +36,40 @@ public class Environment {
 }
 
 class TemporaryScope extends Scope {
-    private Boolean clear;
     public TemporaryScope() {
         super();
-        this.clear = true;
     }
-    public TemporaryScope refresh(Scope currentScope){
-        if(!this.clear){this.memory.clear();}
-        this.memory.putAll(currentScope.memory);
-        this.clear = false;
+    public TemporaryScope setContext(Scope currentScope){
+        this.memory.clear();
+        for(var m : currentScope.memory.entrySet()){
+            this.memory.put(m.getKey(), new RefPointer(m.getValue().getValue()));
+        }
         return this;
+    }
+
+    public static TemporaryScope create(Scope currentScope){
+        return new TemporaryScope().setContext(currentScope);
     }
 }
 
 class Scope {
-    protected HashMap<String, Pointer> memory;
+    protected HashMap<String, RefPointer> memory;
 
     public Scope() {
         this.memory = new HashMap<>();
     }
 
-    public Pointer GetPointer(String name){
+    public RefPointer GetPointer(String name){
         var pointer = memory.get(name);
         if(pointer == null){
-            pointer = new Pointer(name);
-            attributePointer(pointer);
+            pointer = new RefPointer(name);
+            attributePointer(name, pointer);
         }
         return pointer;
     }
 
-    public void attributePointer(Pointer pointer){
-        memory.put(pointer.name(), pointer);
+    public void attributePointer(String name, RefPointer pointer){
+        memory.put(name, pointer);
     }
 
     public void clear(){

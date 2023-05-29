@@ -502,6 +502,20 @@ public class LunaLangParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class CmdscopeContext extends CmdContext {
+		public List<CmdContext> cmd() {
+			return getRuleContexts(CmdContext.class);
+		}
+		public CmdContext cmd(int i) {
+			return getRuleContext(CmdContext.class,i);
+		}
+		public CmdscopeContext(CmdContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitCmdscope(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class AttrContext extends CmdContext {
 		public LvalueContext lvalue() {
 			return getRuleContext(LvalueContext.class,0);
@@ -532,20 +546,6 @@ public class LunaLangParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitIf(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class CmdignoreContext extends CmdContext {
-		public List<CmdContext> cmd() {
-			return getRuleContexts(CmdContext.class);
-		}
-		public CmdContext cmd(int i) {
-			return getRuleContext(CmdContext.class,i);
-		}
-		public CmdignoreContext(CmdContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitCmdignore(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -603,7 +603,7 @@ public class LunaLangParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
-				_localctx = new CmdignoreContext(_localctx);
+				_localctx = new CmdscopeContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(100);
@@ -1670,17 +1670,6 @@ public class LunaLangParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class Pexp_lvalueContext extends PexpContext {
-		public LvalueContext lvalue() {
-			return getRuleContext(LvalueContext.class,0);
-		}
-		public Pexp_lvalueContext(PexpContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitPexp_lvalue(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class TupleContext extends PexpContext {
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
@@ -1704,6 +1693,17 @@ public class LunaLangParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitNew(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class PexpLvalueContext extends PexpContext {
+		public LvalueContext lvalue() {
+			return getRuleContext(LvalueContext.class,0);
+		}
+		public PexpLvalueContext(PexpContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitPexpLvalue(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1798,7 +1798,7 @@ public class LunaLangParser extends Parser {
 				}
 				break;
 			case 4:
-				_localctx = new Pexp_lvalueContext(_localctx);
+				_localctx = new PexpLvalueContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(273);
@@ -1885,38 +1885,38 @@ public class LunaLangParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class Lvalue_idContext extends LvalueContext {
+	public static class LvalueAccessContext extends LvalueContext {
+		public LvalueContext lvalue() {
+			return getRuleContext(LvalueContext.class,0);
+		}
 		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
-		public Lvalue_idContext(LvalueContext ctx) { copyFrom(ctx); }
+		public LvalueAccessContext(LvalueContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_id(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalueAccess(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class Lvalue_arrContext extends LvalueContext {
+	public static class LvalueIdContext extends LvalueContext {
+		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
+		public LvalueIdContext(LvalueContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalueId(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class LvalueArrContext extends LvalueContext {
 		public LvalueContext lvalue() {
 			return getRuleContext(LvalueContext.class,0);
 		}
 		public ExpContext exp() {
 			return getRuleContext(ExpContext.class,0);
 		}
-		public Lvalue_arrContext(LvalueContext ctx) { copyFrom(ctx); }
+		public LvalueArrContext(LvalueContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_arr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class Lvalue_accessContext extends LvalueContext {
-		public LvalueContext lvalue() {
-			return getRuleContext(LvalueContext.class,0);
-		}
-		public TerminalNode ID() { return getToken(LunaLangParser.ID, 0); }
-		public Lvalue_accessContext(LvalueContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalue_access(this);
+			if ( visitor instanceof LunaLangVisitor ) return ((LunaLangVisitor<? extends T>)visitor).visitLvalueArr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1937,7 +1937,7 @@ public class LunaLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			_localctx = new Lvalue_idContext(_localctx);
+			_localctx = new LvalueIdContext(_localctx);
 			_ctx = _localctx;
 			_prevctx = _localctx;
 
@@ -1958,7 +1958,7 @@ public class LunaLangParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
 					case 1:
 						{
-						_localctx = new Lvalue_arrContext(new LvalueContext(_parentctx, _parentState));
+						_localctx = new LvalueArrContext(new LvalueContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_lvalue);
 						setState(287);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
@@ -1972,7 +1972,7 @@ public class LunaLangParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new Lvalue_accessContext(new LvalueContext(_parentctx, _parentState));
+						_localctx = new LvalueAccessContext(new LvalueContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_lvalue);
 						setState(292);
 						if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");

@@ -81,13 +81,13 @@ public class LunaLangBaseListener implements LunaLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCmdignore(LunaLangParser.CmdignoreContext ctx) { }
+	@Override public void enterCmdscope(LunaLangParser.CmdscopeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCmdignore(LunaLangParser.CmdignoreContext ctx) { }
+	@Override public void exitCmdscope(LunaLangParser.CmdscopeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -501,13 +501,13 @@ public class LunaLangBaseListener implements LunaLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx) { }
+	@Override public void enterPexpLvalue(LunaLangParser.PexpLvalueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx) { }
+	@Override public void exitPexpLvalue(LunaLangParser.PexpLvalueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -525,37 +525,37 @@ public class LunaLangBaseListener implements LunaLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalue_id(LunaLangParser.Lvalue_idContext ctx) { }
+	@Override public void enterLvalueAccess(LunaLangParser.LvalueAccessContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalue_id(LunaLangParser.Lvalue_idContext ctx) { }
+	@Override public void exitLvalueAccess(LunaLangParser.LvalueAccessContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalue_arr(LunaLangParser.Lvalue_arrContext ctx) { }
+	@Override public void enterLvalueId(LunaLangParser.LvalueIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalue_arr(LunaLangParser.Lvalue_arrContext ctx) { }
+	@Override public void exitLvalueId(LunaLangParser.LvalueIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalue_access(LunaLangParser.Lvalue_accessContext ctx) { }
+	@Override public void enterLvalueArr(LunaLangParser.LvalueArrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalue_access(LunaLangParser.Lvalue_accessContext ctx) { }
+	@Override public void exitLvalueArr(LunaLangParser.LvalueArrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

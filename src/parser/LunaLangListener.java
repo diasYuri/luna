@@ -63,17 +63,17 @@ public interface LunaLangListener extends ParseTreeListener {
 	 */
 	void exitParams(LunaLangParser.ParamsContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code cmdignore}
+	 * Enter a parse tree produced by the {@code cmdscope}
 	 * labeled alternative in {@link LunaLangParser#cmd}.
 	 * @param ctx the parse tree
 	 */
-	void enterCmdignore(LunaLangParser.CmdignoreContext ctx);
+	void enterCmdscope(LunaLangParser.CmdscopeContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code cmdignore}
+	 * Exit a parse tree produced by the {@code cmdscope}
 	 * labeled alternative in {@link LunaLangParser#cmd}.
 	 * @param ctx the parse tree
 	 */
-	void exitCmdignore(LunaLangParser.CmdignoreContext ctx);
+	void exitCmdscope(LunaLangParser.CmdscopeContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code if}
 	 * labeled alternative in {@link LunaLangParser#cmd}.
@@ -483,17 +483,17 @@ public interface LunaLangListener extends ParseTreeListener {
 	 */
 	void exitCallValue(LunaLangParser.CallValueContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code pexp_lvalue}
+	 * Enter a parse tree produced by the {@code pexpLvalue}
 	 * labeled alternative in {@link LunaLangParser#pexp}.
 	 * @param ctx the parse tree
 	 */
-	void enterPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx);
+	void enterPexpLvalue(LunaLangParser.PexpLvalueContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code pexp_lvalue}
+	 * Exit a parse tree produced by the {@code pexpLvalue}
 	 * labeled alternative in {@link LunaLangParser#pexp}.
 	 * @param ctx the parse tree
 	 */
-	void exitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx);
+	void exitPexpLvalue(LunaLangParser.PexpLvalueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LunaLangParser#exps}.
 	 * @param ctx the parse tree
@@ -505,41 +505,41 @@ public interface LunaLangListener extends ParseTreeListener {
 	 */
 	void exitExps(LunaLangParser.ExpsContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code lvalue_id}
+	 * Enter a parse tree produced by the {@code lvalueAccess}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void enterLvalue_id(LunaLangParser.Lvalue_idContext ctx);
+	void enterLvalueAccess(LunaLangParser.LvalueAccessContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code lvalue_id}
+	 * Exit a parse tree produced by the {@code lvalueAccess}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void exitLvalue_id(LunaLangParser.Lvalue_idContext ctx);
+	void exitLvalueAccess(LunaLangParser.LvalueAccessContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code lvalue_arr}
+	 * Enter a parse tree produced by the {@code lvalueId}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void enterLvalue_arr(LunaLangParser.Lvalue_arrContext ctx);
+	void enterLvalueId(LunaLangParser.LvalueIdContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code lvalue_arr}
+	 * Exit a parse tree produced by the {@code lvalueId}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void exitLvalue_arr(LunaLangParser.Lvalue_arrContext ctx);
+	void exitLvalueId(LunaLangParser.LvalueIdContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code lvalue_access}
+	 * Enter a parse tree produced by the {@code lvalueArr}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void enterLvalue_access(LunaLangParser.Lvalue_accessContext ctx);
+	void enterLvalueArr(LunaLangParser.LvalueArrContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code lvalue_access}
+	 * Exit a parse tree produced by the {@code lvalueArr}
 	 * labeled alternative in {@link LunaLangParser#lvalue}.
 	 * @param ctx the parse tree
 	 */
-	void exitLvalue_access(LunaLangParser.Lvalue_accessContext ctx);
+	void exitLvalueArr(LunaLangParser.LvalueArrContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LunaLangParser#btype}.
 	 * @param ctx the parse tree

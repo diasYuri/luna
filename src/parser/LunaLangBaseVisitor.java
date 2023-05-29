@@ -57,7 +57,7 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCmdignore(LunaLangParser.CmdignoreContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCmdscope(LunaLangParser.CmdscopeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -302,7 +302,7 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPexpLvalue(LunaLangParser.PexpLvalueContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -316,21 +316,21 @@ public class LunaLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalueAccess(LunaLangParser.LvalueAccessContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue_arr(LunaLangParser.Lvalue_arrContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalueId(LunaLangParser.LvalueIdContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLvalue_access(LunaLangParser.Lvalue_accessContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLvalueArr(LunaLangParser.LvalueArrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

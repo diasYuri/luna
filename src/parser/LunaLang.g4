@@ -23,7 +23,7 @@ func : ID '(' params? ')' (':' type (',' type)*)? '{' cmd* '}';
 
 params : ID '::' type (',' ID '::' type)*;
 
-cmd : '{' cmd* '}'                                      #cmdignore
+cmd : '{' cmd* '}'                                      #cmdscope
     | 'if' '(' exp ')' cmd_if=cmd                       #if
     | 'if' '(' exp ')' cmd_if=cmd 'else' cmd_else=cmd   #if
     | 'iterate' '(' exp ')' cmd                         #iterate
@@ -75,14 +75,14 @@ sexp : '!' right=sexp         #nexp
 pexp : '(' exp ')'                                       #tuple
      | 'new' type ('[' arr_exp=exp ']')?                 #new
      | ID '(' parameters=exps? ')' '[' offset=exp ']'    #callValue
-     | lvalue                                            #pexp_lvalue
+     | lvalue                                            #pexpLvalue
      ;
 
 exps: exp (',' exp)*;
 
-lvalue : ID                     #lvalue_id
-       | lvalue '[' exp ']'     #lvalue_arr
-       | lvalue'.'ID            #lvalue_access
+lvalue : ID                     #lvalueId
+       | lvalue '[' exp ']'     #lvalueArr
+       | lvalue'.'ID            #lvalueAccess
        ;
 
 btype: TYPE_INT
@@ -156,4 +156,3 @@ WS: [ \t\n\r]+ -> skip;
 ID: [a-zA-Z_][a-zA-Z_0-9]*;
 LINE_COMMENT : '--' ~('\r' | '\n')* BREAKLINE -> skip;
 COMMENT: '{-' .*?  '-}' -> skip;
-// TODO: adicionar comentário

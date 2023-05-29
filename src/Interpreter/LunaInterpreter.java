@@ -1,14 +1,24 @@
 package src.Interpreter;
 
+import src.exceptions.LunaRuntimeException;
 import src.parser.LunaLangBaseVisitor;
 import src.parser.LunaLangParser;
 import src.types.*;
+import src.types.descriptor.DataTypeDescriptor;
+import src.types.descriptor.PrimitiveTypeDescriptor;
+import src.types.descriptor.TypeDescriptor;
+import src.types.pointers.ArrayPointer;
+import src.types.pointers.Pointer;
+import src.types.pointers.RefPointer;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     private final HashMap<String, LunaLangParser.FuncContext> funcs = new HashMap<>();
+    private final HashMap<String, HashMap<String, Class>> dataDefinitions = new HashMap<>();
     private final Stack<Object> operands = new Stack<>();
     private final Environment env = new Environment();
 
@@ -25,12 +35,31 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 main = func;
             }
         }
+        for(var data : ctx.data()){
+            dataDefinitions.put(data.ID().getText(), new HashMap<>());
+        }
+        for(var data : ctx.data()){
+            data.accept(this);
+        }
         if(main == null){
             throw new RuntimeException( "Não há uma função chamada inicio ! abortando ! ");
         }
 
         env.newScope();
         return main.accept(this);
+    }
+
+    @Override
+    public Object visitData(LunaLangParser.DataContext ctx) {
+        String dataName = ctx.ID().getText();
+        HashMap<String, Class> dataDefinition = dataDefinitions.get(dataName);
+        for(var decl: ctx.decl()){
+            decl.type().accept(this);
+            TypeDescriptor descriptor = (TypeDescriptor)operands.pop();
+            String propName = decl.ID().getText();
+            dataDefinition.put(propName, descriptor.getType());
+        }
+        return null;
     }
 
     @Override
@@ -128,6 +157,14 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         ctx.exps().accept(this);
         var value = operands.peek();
         return value;
+    }
+
+    @Override
+    public Object visitCmdscope(LunaLangParser.CmdscopeContext ctx) {
+        env.newTemporaryScope();
+        var result = super.visitCmdscope(ctx);
+        env.endCurrentScope();
+        return result;
     }
 
     @Override
@@ -254,25 +291,25 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
         if(objPointer instanceof Pointer pointer){
             pointer.setValue(value);
-            env.attributePointer(pointer);
         }
 
         return value;
     }
 
     @Override
-    public Object visitLvalue_arr(LunaLangParser.Lvalue_arrContext ctx) {
+    public Object visitLvalueArr(LunaLangParser.LvalueArrContext ctx) {
         ctx.exp().accept(this);
         LunaNumber value = (LunaNumber)operands.pop();
         ctx.lvalue().accept(this);
-        Pointer pointer = (Pointer) operands.pop();
-        var arr = (Object[])pointer.value();
-        //
-        return null;
+        Pointer pointer = (Pointer)operands.pop();
+        var arr = (Object[])pointer.getValue();
+        ArrayPointer arrPointer = new ArrayPointer(arr, value.$int());
+        operands.push(arrPointer);
+        return arrPointer;
     }
 
     @Override
-    public Object visitLvalue_id(LunaLangParser.Lvalue_idContext ctx) {
+    public Object visitLvalueId(LunaLangParser.LvalueIdContext ctx) {
         var name = ctx.ID().getText();
         var pointer = env.getPointer(name);
         operands.push(pointer);
@@ -280,11 +317,23 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitPexp_lvalue(LunaLangParser.Pexp_lvalueContext ctx) {
+    public Object visitLvalueAccess(LunaLangParser.LvalueAccessContext ctx) {
+        ctx.lvalue().accept(this);
+        Pointer pointer = (Pointer)operands.pop();
+        LunaData data = (LunaData)pointer.getValue();
+        String propName = ctx.ID().getText();
+        RefPointer propPointer = data.getProperty(propName);
+        LunaRuntimeException.ThrowIfNull(propPointer, String.format("The %s property has not been set", propName));
+        operands.push(propPointer);
+        return propPointer;
+    }
+
+    @Override
+    public Object visitPexpLvalue(LunaLangParser.PexpLvalueContext ctx) {
         ctx.lvalue().accept(this);
         var pointer = (Pointer)operands.pop();
-        operands.push(pointer.value());
-        return pointer.value();
+        operands.push(pointer.getValue());
+        return pointer.getValue();
     }
 
     @Override
@@ -375,20 +424,17 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     public Object visitNew(LunaLangParser.NewContext ctx)  {
         try{
             ctx.type().accept(this);
-            Class type = (Class)operands.pop();
-            Object instance = null;
+            TypeDescriptor type = (TypeDescriptor)operands.pop();
+            Object instance;
             if(ctx.exp() != null){
                 ctx.exp().accept(this);
                 LunaNumber size = (LunaNumber)operands.pop();
-                instance = Array.newInstance(type, size.$int());
+                instance = type.newArrInstance(size.$int());
             }
             else {
-                if(type.isArray()){
-                    instance = Array.newInstance(type.getComponentType(), 0);
-                }else{
-                    instance = type.getConstructors()[0].newInstance();
-                }
+               instance = type.newInstance();
             }
+            operands.push(instance);
             return instance;
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
@@ -398,27 +444,31 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     @Override
     public Object visitArrayType(LunaLangParser.ArrayTypeContext ctx) {
         ctx.type().accept(this);
-        var type = ((Class)operands.pop()).arrayType();
-        operands.push(type);
-        return type;
+        ((TypeDescriptor)operands.peek()).convertInArrayType();
+        return operands.peek();
     }
 
     @Override
     public Object visitBtype(LunaLangParser.BtypeContext ctx) {
         if(ctx.TYPE_INT() != null){
-            operands.push(LunaInteger.class);
+            operands.push(new PrimitiveTypeDescriptor(LunaInteger.class));
         }
         if(ctx.TYPE_FLOAT() != null){
-            operands.push(LunaFloat.class);
+            operands.push(new PrimitiveTypeDescriptor(LunaFloat.class));
         }
         if(ctx.TYPE_BOOL() != null){
-            operands.push(LunaBoolean.class);
+            operands.push(new PrimitiveTypeDescriptor(LunaBoolean.class));
         }
         if(ctx.TYPE_CHAR() != null){
-            operands.push(LunaChar.class);
+            operands.push(new PrimitiveTypeDescriptor(LunaChar.class));
         }
         if(ctx.ID() != null){
-            //operands.push(LunaInteger.class);
+            String id = ctx.ID().getText();
+            var descriptor = dataDefinitions.get(id);
+            if(descriptor == null){
+                throw new RuntimeException(String.format("the type %s has not been defined", id));
+            }
+            operands.push(new DataTypeDescriptor(id, descriptor));
         }
         return null;
     }
