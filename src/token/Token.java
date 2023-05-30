@@ -4,7 +4,7 @@ Matheus Pedro Zancanella Barboza - 202035005
 Yuri Dias de Azevedo - 201935019
  */
 
-package token;
+package src.token;
 
 public class Token {
   private TOKEN_TYPE _token_type;
