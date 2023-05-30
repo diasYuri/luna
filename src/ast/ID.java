@@ -1,10 +1,8 @@
 package src.ast;
 
-import src.ast.abstracts.BinOp;
 import src.ast.abstracts.Expr;
-import src.ast.abstracts.Node;
 
-public class ID extends Node {
+public class ID extends Expr {
     private final String name;
 
     public ID(int l, int c, String name){
