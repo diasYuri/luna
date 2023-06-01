@@ -2,7 +2,7 @@ grammar LunaLang;
 
 @parser::header
 {
-    package src.parser;
+    package src.parser.antlr;
     import src.ast.*;
     import src.ast.abstracts.*;
     import src.ast.types.*;
@@ -10,7 +10,7 @@ grammar LunaLang;
 
 @lexer::header
 {
-    package src.parser;
+    package src.parser.antlr;
 }
 
 prog : data* func* EOF;
@@ -29,7 +29,7 @@ cmd : '{' cmd* '}'                                      #cmdscope
     | 'iterate' '(' exp ')' cmd                         #iterate
     | 'read' lvalue ';'                                 #read
     | 'print' exp ';'                                   #print
-    | 'return' exps ';'                                 #return //'return' exp (','exp)* ';'
+    | 'return' exps ';'                                 #return
     | lvalue '=' exp ';'                                #attr
     | ID '(' parameters=exps? ')' ('<' lvalue (',' lvalue)* '>')? ';' #call_attr
     ;

@@ -1,8 +1,8 @@
-package src.Interpreter;
+package src.interpreter;
 
 import src.exceptions.LunaRuntimeException;
-import src.parser.LunaLangBaseVisitor;
-import src.parser.LunaLangParser;
+import src.parser.antlr.LunaLangBaseVisitor;
+import src.parser.antlr.LunaLangParser;
 import src.types.*;
 import src.types.descriptor.DataTypeDescriptor;
 import src.types.descriptor.PrimitiveTypeDescriptor;
@@ -11,16 +11,14 @@ import src.types.pointers.ArrayPointer;
 import src.types.pointers.Pointer;
 import src.types.pointers.RefPointer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     private final HashMap<String, LunaLangParser.FuncContext> funcs = new HashMap<>();
     private final HashMap<String, HashMap<String, Class>> dataDefinitions = new HashMap<>();
     private final Stack<Object> operands = new Stack<>();
     private final Environment env = new Environment();
+    private final ContextSignal returnContextSignal = new ContextSignal();
 
     @Override
     public Object visitProg(LunaLangParser.ProgContext ctx) {
@@ -139,7 +137,14 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
         }
 
-        return super.visitFunc(ctx);
+
+        for(var cmd : ctx.cmd()){
+            cmd.accept(this);
+            if(returnContextSignal.listingSignal(true)) {
+                break;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -156,15 +161,21 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     public Object visitReturn(LunaLangParser.ReturnContext ctx) {
         ctx.exps().accept(this);
         var value = operands.peek();
+        returnContextSignal.emitSignal();
         return value;
     }
 
     @Override
     public Object visitCmdscope(LunaLangParser.CmdscopeContext ctx) {
         env.newTemporaryScope();
-        var result = super.visitCmdscope(ctx);
+        for(var cmd : ctx.cmd()){
+            cmd.accept(this);
+            if(returnContextSignal.listingSignal(false)) {
+                break;
+            }
+        }
         env.endCurrentScope();
-        return result;
+        return null;
     }
 
     @Override
@@ -470,6 +481,17 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
             operands.push(new DataTypeDescriptor(id, descriptor));
         }
+        return null;
+    }
+
+    @Override
+    public Object visitTuple(LunaLangParser.TupleContext ctx) {
+        return super.visitTuple(ctx);
+    }
+
+    @Override
+    public Object visitNull(LunaLangParser.NullContext ctx) {
+        operands.push(null);
         return null;
     }
 }

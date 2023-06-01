@@ -1,4 +1,4 @@
-package src.Interpreter;
+package src.interpreter;
 
 import src.types.pointers.RefPointer;
 
@@ -8,6 +8,7 @@ import java.util.Stack;
 public class Environment {
     private final Stack<Object> operands = new Stack<>();
     private final Stack<Scope> scopeStack = new Stack<>();
+    private final ContextSignal contextSignal = new ContextSignal();
 
     public RefPointer getPointer(String name){
         return currentScope().GetPointer(name);
@@ -22,31 +23,30 @@ public class Environment {
     }
 
     public void newTemporaryScope(){
-        scopeStack.push(TemporaryScope.create(currentScope()));
+        scopeStack.push(ContextScope.create(currentScope()));
     }
 
     public void endCurrentScope(){
         scopeStack.pop();
     }
 
-
     private Scope currentScope(){
         return scopeStack.peek();
     }
 }
 
-class TemporaryScope extends Scope {
-    public TemporaryScope() {
+class ContextScope extends Scope {
+    public ContextScope() {
         super();
     }
-    public TemporaryScope setContext(Scope currentScope){
+    public ContextScope setContext(Scope currentScope){
         this.memory.clear();
         this.memory.putAll(currentScope.memory);
         return this;
     }
 
-    public static TemporaryScope create(Scope currentScope){
-        return new TemporaryScope().setContext(currentScope);
+    public static ContextScope create(Scope currentScope){
+        return new ContextScope().setContext(currentScope);
     }
 }
 
@@ -72,5 +72,22 @@ class Scope {
 
     public void clear(){
         memory.clear();
+    }
+}
+
+class ContextSignal{
+    private boolean hasSignal;
+    public boolean listingSignal(boolean removeSignal){
+        if(this.hasSignal){
+            if(removeSignal) {
+                this.hasSignal = false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void emitSignal(){
+        hasSignal = true;
     }
 }

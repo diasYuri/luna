@@ -1,6 +1,6 @@
 // Generated from ../src/parser/LunaLang.g4 by ANTLR 4.8
 
-    package src.parser;
+    package src.parser.antlr;
 
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

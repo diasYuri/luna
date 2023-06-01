@@ -1,15 +1,15 @@
 package src.ast.abstracts;
 
-public class Node {
+public class Node extends SuperNode {
     private final int line;
-    private final int col;
+    private final int column;
 
     public Node(int l, int c){
         line = l;
-        col = c;
+        column = c;
     }
 
     public int getLine(){ return line;}
-    public int getCol(){ return col;}
+    public int getColumn(){ return column;}
 }
 

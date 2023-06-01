@@ -8,9 +8,9 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import src.Interpreter.LunaInterpreter;
-import src.parser.LunaLangLexer;
-import src.parser.LunaLangParser;
+import src.interpreter.LunaInterpreter;
+import src.parser.antlr.LunaLangLexer;
+import src.parser.antlr.LunaLangParser;
 
 import java.io.IOException;
 

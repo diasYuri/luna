@@ -1,4 +1,4 @@
-package src.Interpreter;
+package src.interpreter;
 
 public class Parameter {
     private String name;

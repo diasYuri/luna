@@ -1,9 +1,6 @@
 // Generated from ../src/parser/LunaLang.g4 by ANTLR 4.8
 
-    package src.parser;
-    import src.ast.*;
-    import src.ast.abstracts.*;
-    import src.ast.types.*;
+    package src.parser.antlr;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

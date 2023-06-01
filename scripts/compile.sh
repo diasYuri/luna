@@ -12,8 +12,7 @@ LIB_ANTLR="../lib/antlr-4.8-complete.jar"
 
 mkdir -p $BUILD_DIR
 
-java -jar $LIB_ANTLR $PARSER_DIR
-java -jar $LIB_ANTLR -no-listener -visitor $PARSER_DIR
+java -jar $LIB_ANTLR -o ../src/parser/antlr -no-listener -visitor $PARSER_DIR -Xexact-output-dir
 javac -cp .:$LIB_ANTLR -d $BUILD_DIR $(find $PROJECT_DIR -name "*.java")
 
 if [ $? -ne 0 ]; then
