@@ -5,14 +5,14 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-PROJECT_DIR="../src/"
+PROJECT_DIR="../lang/"
 BUILD_DIR=$1
-PARSER_DIR="../src/parser/LunaLang.g4"
+PARSER_DIR="../lang/parser/LunaLang.g4"
 LIB_ANTLR="../lib/antlr-4.8-complete.jar"
 
 mkdir -p $BUILD_DIR
 
-java -jar $LIB_ANTLR -o ../src/parser/antlr -no-listener -visitor $PARSER_DIR -Xexact-output-dir
+java -jar $LIB_ANTLR -o ../lang/parser/antlr -no-listener -visitor $PARSER_DIR -Xexact-output-dir
 javac -cp .:$LIB_ANTLR -d $BUILD_DIR $(find $PROJECT_DIR -name "*.java")
 
 if [ $? -ne 0 ]; then
