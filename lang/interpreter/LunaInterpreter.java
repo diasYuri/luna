@@ -78,7 +78,7 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         funcs.get(funcName).accept(this);
         env.endCurrentScope();
 
-        if(ctx.lvalue() != null){
+        if(ctx.lvalue() != null && ctx.lvalue().size()>0){
             var response = (ArrayList)operands.pop();
             for (int i = 0; i < ctx.lvalue().size(); i++) {
                 ctx.lvalue(i).accept(this);
