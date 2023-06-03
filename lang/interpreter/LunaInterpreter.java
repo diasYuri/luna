@@ -33,7 +33,7 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
         }
         for(var data : ctx.data()){
-            dataDefinitions.put(data.ID().getText(), new HashMap<>());
+            dataDefinitions.put(data.ID_DATA().getText(), new HashMap<>());
         }
         for(var data : ctx.data()){
             data.accept(this);
@@ -48,7 +48,7 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitData(LunaLangParser.DataContext ctx) {
-        String dataName = ctx.ID().getText();
+        String dataName = ctx.ID_DATA().getText();
         HashMap<String, Class> dataDefinition = dataDefinitions.get(dataName);
         for(var decl: ctx.decl()){
             decl.type().accept(this);
@@ -472,8 +472,8 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         if(ctx.TYPE_CHAR() != null){
             operands.push(new PrimitiveTypeDescriptor(LunaChar.class));
         }
-        if(ctx.ID() != null){
-            String id = ctx.ID().getText();
+        if(ctx.ID_DATA() != null){
+            String id = ctx.ID_DATA().getText();
             var descriptor = dataDefinitions.get(id);
             if(descriptor == null){
                 throw new RuntimeException(String.format("the type %s has not been defined", id));

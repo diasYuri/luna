@@ -17,7 +17,7 @@ public class ParserAdapter {
         var l = ctx.start.getLine();
         var c = ctx.start.getCharPositionInLine();
         var declarations = ctx.decl().stream().map(this::mapFrom).toList();
-        var id = ctx.ID().getText();
+        var id = ctx.ID_DATA().getText();
         return new Data(l, c, id, declarations);
     }
     public Declaration mapFrom(LunaLangParser.DeclContext ctx){
@@ -61,8 +61,8 @@ public class ParserAdapter {
         if(ctx.TYPE_CHAR() != null){
             return new BTypeChar(ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
-        if(ctx.ID() != null){
-            return new BTypeId(ctx.start.getLine(), ctx.start.getCharPositionInLine(), ctx.ID().getText());
+        if(ctx.ID_DATA() != null){
+            return new BTypeId(ctx.start.getLine(), ctx.start.getCharPositionInLine(), ctx.ID_DATA().getText());
         }
         throw new RuntimeException();
     }

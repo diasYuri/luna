@@ -8,7 +8,6 @@ import java.util.Stack;
 public class Environment {
     private final Stack<Object> operands = new Stack<>();
     private final Stack<Scope> scopeStack = new Stack<>();
-    private final ContextSignal contextSignal = new ContextSignal();
 
     public RefPointer getPointer(String name){
         return currentScope().GetPointer(name);

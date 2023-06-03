@@ -15,7 +15,7 @@ grammar LunaLang;
 
 prog : data* func* EOF;
 
-data : 'data' ID '{' decl* '}';
+data : 'data' ID_DATA '{' decl* '}';
 
 decl: ID '::' type ';' ;
 
@@ -89,7 +89,7 @@ btype: TYPE_INT
      | TYPE_CHAR
      | TYPE_BOOL
      | TYPE_FLOAT
-     | ID
+     | ID_DATA
      ;
 
 
@@ -107,6 +107,7 @@ INT: [0]|[1-9][0-9]*;
 FLOAT: [1-9][0-9]* '.' [0-9]+;
 CHAR: '\'' . '\'' | '\'\\n\'' | '\'\\r\'' | '\'\\t\'' | '\'\\\\\'';
 WS: [ \t\n\r]+ -> skip;
-ID: [a-zA-Z][a-zA-Z_0-9]*;
+ID: [a-z][a-zA-Z_0-9]*;
+ID_DATA: [A-Z][a-zA-Z_0-9]*;
 LINE_COMMENT : '--' ~('\r' | '\n')* BREAKLINE -> skip;
 COMMENT: '{-' .*?  '-}' -> skip;
