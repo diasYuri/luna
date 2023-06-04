@@ -1,4 +1,4 @@
-// Generated from ../lang/parser/LunaLang.g4 by ANTLR 4.8
+// Generated from lang/parser/LunaLang.g4 by ANTLR 4.8
 
     package lang.parser.antlr;
 

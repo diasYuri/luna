@@ -1,4 +1,4 @@
-package lang.interpreter;
+package lang.interpreter.types;
 
 public class Parameter {
     private String name;

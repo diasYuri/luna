@@ -1,5 +1,6 @@
 package lang.interpreter;
 
+import lang.ast.RootNode;
 import lang.interpreter.exceptions.LunaRuntimeException;
 import lang.parser.antlr.LunaLangBaseVisitor;
 import lang.parser.antlr.LunaLangParser;
@@ -19,6 +20,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     private final Stack<Object> operands = new Stack<>();
     private final Environment env = new Environment();
     private final ContextSignal returnContextSignal = new ContextSignal();
+
+    public void interpreter(RootNode root){
+        this.visit(root.Ctx());
+    }
 
     @Override
     public Object visitProg(LunaLangParser.ProgContext ctx) {

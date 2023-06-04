@@ -1,6 +1,9 @@
 package lang;
 
+import lang.ast.RootNode;
 import lang.ast.SuperNode;
+import lang.interpreter.LunaInterpreter;
+import lang.parser.LunaParseAdaptor;
 import lang.parser.ParseAdaptor;
 import lang.parser.TestParser;
 
@@ -26,7 +29,7 @@ public class LangCompiler{
           
        }
        try{
-	   ParseAdaptor langParser = null;
+           ParseAdaptor langParser = new LunaParseAdaptor();
           
           if(args[0].equals("-bs") ){
               System.out.println("Executando bateria de testes sintáticos:");
@@ -34,11 +37,11 @@ public class LangCompiler{
               return;
           }if(args[0].equals("-byt") ){
               System.out.println("Executando bateria de testes sintáticos:");
-              // TestParser tp = new TestParser(langParser); ;
+              TestParser tp = new TestParser(langParser); ;
               return;
           } if(args[0].equals("-bsm") ){
               System.out.println("Executando bateria de testes sintáticos:");
-              // TestParser tp = new TestParser(langParser); 
+              TestParser tp = new TestParser(langParser);
               return;
           }
           if(args.length != 2){
@@ -51,9 +54,8 @@ public class LangCompiler{
                System.exit(1);
           }
           else if(args[0].equals("-i") ){
-              //iv = new InterpreterVisitor();
-              //result.accept(iv);
-              //((InterpreterVisitor)iv).printEnv();
+              LunaInterpreter interpreter = new LunaInterpreter();
+              interpreter.interpreter((RootNode)result);
           }
           else if(args[0].equals("-ii") ){
             // iv = new InteractiveInterpreterVisitor();
