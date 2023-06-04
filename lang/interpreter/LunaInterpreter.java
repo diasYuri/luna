@@ -27,390 +27,505 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitProg(LunaLangParser.ProgContext ctx) {
-        LunaLangParser.FuncContext main = null;
-        for(var func : ctx.func()){
-            String funcName = func.ID().getText();
+        try {
+            LunaLangParser.FuncContext main = null;
+            for(var func : ctx.func()){
+                String funcName = func.ID().getText();
 
-            funcs.put(funcName, func);
+                funcs.put(funcName, func);
 
-            if(funcName.equals("main")){
-                main = func;
+                if(funcName.equals("main")){
+                    main = func;
+                }
             }
-        }
-        for(var data : ctx.data()){
-            dataDefinitions.put(data.ID_DATA().getText(), new HashMap<>());
-        }
-        for(var data : ctx.data()){
-            data.accept(this);
-        }
-        if(main == null){
-            throw new RuntimeException( "Não há uma função chamada inicio ! abortando ! ");
-        }
+            for(var data : ctx.data()){
+                dataDefinitions.put(data.ID_DATA().getText(), new HashMap<>());
+            }
+            for(var data : ctx.data()){
+                data.accept(this);
+            }
+            if(main == null){
+                throw new RuntimeException( "Não há uma função chamada inicio ! abortando ! ");
+            }
 
-        env.newScope();
-        return main.accept(this);
+            env.newScope();
+            return main.accept(this);
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitData(LunaLangParser.DataContext ctx) {
-        String dataName = ctx.ID_DATA().getText();
-        HashMap<String, Class> dataDefinition = dataDefinitions.get(dataName);
-        for(var decl: ctx.decl()){
-            decl.type().accept(this);
-            TypeDescriptor descriptor = (TypeDescriptor)operands.pop();
-            String propName = decl.ID().getText();
-            dataDefinition.put(propName, descriptor.getType());
+        try {
+            String dataName = ctx.ID_DATA().getText();
+            HashMap<String, Class> dataDefinition = dataDefinitions.get(dataName);
+            for(var decl: ctx.decl()){
+                decl.type().accept(this);
+                TypeDescriptor descriptor = (TypeDescriptor)operands.pop();
+                String propName = decl.ID().getText();
+                dataDefinition.put(propName, descriptor.getType());
+            }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
     public Object visitCall_attr(LunaLangParser.Call_attrContext ctx) {
-        String funcName = ctx.ID().getText();
-        if(!funcs.containsKey(funcName)){
-            throw new RuntimeException("A função "+funcName+" não foi declarada.");
-        }
-
-        if(ctx.parameters != null){
-            ctx.parameters.accept(this);
-            var params = (ArrayList)operands.pop();
-            for(var param: params){
-                operands.push(param);
+        try {
+            String funcName = ctx.ID().getText();
+            if(!funcs.containsKey(funcName)){
+                throw new RuntimeException("A função "+funcName+" não foi declarada.");
             }
-        }
 
-        env.newScope();
-        funcs.get(funcName).accept(this);
-        env.endCurrentScope();
-
-        if(ctx.lvalue() != null && ctx.lvalue().size()>0){
-            var response = (ArrayList)operands.pop();
-            for (int i = 0; i < ctx.lvalue().size(); i++) {
-                ctx.lvalue(i).accept(this);
-                Pointer pointer = (Pointer)operands.pop();
-                pointer.setValue(response.get(i));
+            if(ctx.parameters != null){
+                ctx.parameters.accept(this);
+                var params = (ArrayList)operands.pop();
+                for(var param: params){
+                    operands.push(param);
+                }
             }
+
+            env.newScope();
+            funcs.get(funcName).accept(this);
+            env.endCurrentScope();
+
+            if(ctx.lvalue() != null && ctx.lvalue().size()>0){
+                var response = (ArrayList)operands.pop();
+                for (int i = 0; i < ctx.lvalue().size(); i++) {
+                    ctx.lvalue(i).accept(this);
+                    Pointer pointer = (Pointer)operands.pop();
+                    pointer.setValue(response.get(i));
+                }
+            }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
     public Object visitCallValue(LunaLangParser.CallValueContext ctx) {
-        String funcName = ctx.ID().getText();
-        if(!funcs.containsKey(funcName)){
-            throw new RuntimeException("A função "+funcName+" não foi declarada.");
-        }
-
-        ctx.offset.accept(this);
-        var offset = (LunaNumber)operands.pop();
-        if(offset == null){
-            throw new RuntimeException("Offset undefined");
-        }
-
-        if(ctx.parameters != null){
-            ctx.parameters.accept(this);
-            var params = (ArrayList)operands.pop();
-            for(var param: params){
-                operands.push(param);
+        try {
+            String funcName = ctx.ID().getText();
+            if(!funcs.containsKey(funcName)){
+                throw new RuntimeException("A função "+funcName+" não foi declarada.");
             }
+
+            ctx.offset.accept(this);
+            var offset = (LunaNumber)operands.pop();
+            if(offset == null){
+                throw new RuntimeException("Offset undefined");
+            }
+
+            if(ctx.parameters != null){
+                ctx.parameters.accept(this);
+                var params = (ArrayList)operands.pop();
+                for(var param: params){
+                    operands.push(param);
+                }
+            }
+
+            env.newScope();
+            funcs.get(funcName).accept(this);
+            env.endCurrentScope();
+
+            var response = (ArrayList)operands.pop();
+            if(response == null){
+                throw new RuntimeException("Response undefined");
+            }
+
+            var value = response.get(offset.$int());
+            operands.push(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-
-        env.newScope();
-        funcs.get(funcName).accept(this);
-        env.endCurrentScope();
-
-        var response = (ArrayList)operands.pop();
-        if(response == null){
-            throw new RuntimeException("Response undefined");
-        }
-
-        var value = response.get(offset.$int());
-        operands.push(value);
-        return value;
     }
 
     @Override
     public Object visitFunc(LunaLangParser.FuncContext ctx) {
-        if(ctx.params() != null){
-            ctx.params().accept(this);
-            var params = (ArrayList)operands.pop();
-            for (int i = params.size()-1; i >= 0; i--) {
-                var varName = ((Parameter)params.get(i)).name();
-                var value = operands.pop();
-                env.attributeVar(varName, value);
+        try {
+            if(ctx.params() != null){
+                ctx.params().accept(this);
+                var params = (ArrayList)operands.pop();
+                for (int i = params.size()-1; i >= 0; i--) {
+                    var varName = ((Parameter)params.get(i)).name();
+                    var value = operands.pop();
+                    env.attributeVar(varName, value);
+                }
             }
-        }
 
 
-        for(var cmd : ctx.cmd()){
-            cmd.accept(this);
-            if(returnContextSignal.listingSignal(true)) {
-                break;
+            for(var cmd : ctx.cmd()){
+                cmd.accept(this);
+                if(returnContextSignal.listingSignal(true)) {
+                    break;
+                }
             }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
     public Object visitParams(LunaLangParser.ParamsContext ctx) {
-        var params = new ArrayList<Parameter>();
-        for (int i = 0; i < ctx.ID().size(); i++) {
-            params.add(new Parameter(ctx.ID(i).getText(), ctx.type(i).getText()));
+        try {
+            var params = new ArrayList<Parameter>();
+            for (int i = 0; i < ctx.ID().size(); i++) {
+                params.add(new Parameter(ctx.ID(i).getText(), ctx.type(i).getText()));
+            }
+            operands.push(params);
+            return params;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        operands.push(params);
-        return params;
     }
 
     @Override
     public Object visitReturn(LunaLangParser.ReturnContext ctx) {
-        ctx.exps().accept(this);
-        var value = operands.peek();
-        returnContextSignal.emitSignal();
-        return value;
+        try {
+            ctx.exps().accept(this);
+            var value = operands.peek();
+            returnContextSignal.emitSignal();
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitCmdscope(LunaLangParser.CmdscopeContext ctx) {
-        env.newTemporaryScope();
-        for(var cmd : ctx.cmd()){
-            cmd.accept(this);
-            if(returnContextSignal.listingSignal(false)) {
-                break;
+        try {
+            env.newTemporaryScope();
+            for(var cmd : ctx.cmd()){
+                cmd.accept(this);
+                if(returnContextSignal.listingSignal(false)) {
+                    break;
+                }
             }
+            env.endCurrentScope();
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        env.endCurrentScope();
-        return null;
     }
 
     @Override
     public Object visitIterate(LunaLangParser.IterateContext ctx) {
-        ctx.exp().accept(this);
-        var valueIterate = (LunaNumber)operands.pop();
-        for (int i = 0; i < valueIterate.$int(); i++) {
-            env.newTemporaryScope();
-            ctx.cmd().accept(this);
-            env.endCurrentScope();
+        try {
+            ctx.exp().accept(this);
+            var valueIterate = (LunaNumber)operands.pop();
+            for (int i = 0; i < valueIterate.$int(); i++) {
+                env.newTemporaryScope();
+                ctx.cmd().accept(this);
+                env.endCurrentScope();
+            }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
     public Object visitExps(LunaLangParser.ExpsContext ctx) {
-        var exps = ctx.exp();
-        var arrayList = new ArrayList<>();
+        try {
+            var exps = ctx.exp();
+            var arrayList = new ArrayList<>();
 
-        for (var exp: exps) {
-            exp.accept(this);
-            var result = operands.pop();
-            arrayList.add(result);
+            for (var exp: exps) {
+                exp.accept(this);
+                var result = operands.pop();
+                arrayList.add(result);
+            }
+
+            operands.push(arrayList);
+            return arrayList;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-
-        operands.push(arrayList);
-        return arrayList;
     }
 
     @Override
     public Object visitIf(LunaLangParser.IfContext ctx) {
-        ctx.exp().accept(this);
-        LunaBoolean exp = (LunaBoolean)operands.pop();
-        if(exp.value()){
-            ctx.cmd_if.accept(this);
-        }else{
-            if(ctx.cmd_else != null){
-                ctx.cmd_else.accept(this);
+        try {
+            ctx.exp().accept(this);
+            LunaBoolean exp = (LunaBoolean)operands.pop();
+            if(exp.value()){
+                ctx.cmd_if.accept(this);
+            }else{
+                if(ctx.cmd_else != null){
+                    ctx.cmd_else.accept(this);
+                }
             }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
     public Object visitRead(LunaLangParser.ReadContext ctx) {
-        ctx.lvalue().accept(this);
-        Pointer pointer = (Pointer)operands.pop();
-        Scanner scanner = new Scanner(System.in);
-        String value = scanner.nextLine();
-        pointer.setValue(value);
-        return null;
+        try {
+            ctx.lvalue().accept(this);
+            Pointer pointer = (Pointer)operands.pop();
+            Scanner scanner = new Scanner(System.in);
+            String value = scanner.nextLine();
+            pointer.setValue(value);
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitPrint(LunaLangParser.PrintContext ctx) {
-        ctx.exp().accept(this);
-        var value = operands.pop();
-        System.out.println(value);
-        return null;
+        try {
+            ctx.exp().accept(this);
+            var value = operands.pop();
+            System.out.println(value);
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitAdd(LunaLangParser.AddContext ctx) {
-        ctx.left.accept(this);
-        ctx.right.accept(this);
-        var valueRight = (LunaNumber)operands.pop();
-        var valueLeft = (LunaNumber)operands.pop();
-        LunaNumber resultValue = valueLeft.add(valueRight);
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.left.accept(this);
+            ctx.right.accept(this);
+            var valueRight = (LunaNumber)operands.pop();
+            var valueLeft = (LunaNumber)operands.pop();
+            LunaNumber resultValue = valueLeft.add(valueRight);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitSub(LunaLangParser.SubContext ctx) {
-        ctx.left.accept(this);
-        ctx.right.accept(this);
-        var valueRight = (LunaNumber)operands.pop();
-        var valueLeft = (LunaNumber)operands.pop();
-        LunaNumber resultValue = valueLeft.sub(valueRight);
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.left.accept(this);
+            ctx.right.accept(this);
+            var valueRight = (LunaNumber)operands.pop();
+            var valueLeft = (LunaNumber)operands.pop();
+            LunaNumber resultValue = valueLeft.sub(valueRight);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitMult(LunaLangParser.MultContext ctx) {
-        ctx.left.accept(this);
-        ctx.right.accept(this);
-        var valueRight = (LunaNumber)operands.pop();
-        var valueLeft = (LunaNumber)operands.pop();
-        LunaNumber resultValue = valueLeft.mult(valueRight);
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.left.accept(this);
+            ctx.right.accept(this);
+            var valueRight = (LunaNumber)operands.pop();
+            var valueLeft = (LunaNumber)operands.pop();
+            LunaNumber resultValue = valueLeft.mult(valueRight);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitDiv(LunaLangParser.DivContext ctx) {
-        ctx.left.accept(this);
-        ctx.right.accept(this);
-        var valueRight = (LunaNumber)operands.pop();
-        var valueLeft = (LunaNumber)operands.pop();
-        LunaNumber resultValue = valueLeft.div(valueRight);
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.left.accept(this);
+            ctx.right.accept(this);
+            var valueRight = (LunaNumber)operands.pop();
+            var valueLeft = (LunaNumber)operands.pop();
+            LunaNumber resultValue = valueLeft.div(valueRight);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitMod(LunaLangParser.ModContext ctx) {
-        ctx.left.accept(this);
-        ctx.right.accept(this);
-        var valueRight = (LunaNumber)operands.pop();
-        var valueLeft = (LunaNumber)operands.pop();
-        LunaNumber resultValue = valueLeft.mod(valueRight);
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.left.accept(this);
+            ctx.right.accept(this);
+            var valueRight = (LunaNumber)operands.pop();
+            var valueLeft = (LunaNumber)operands.pop();
+            LunaNumber resultValue = valueLeft.mod(valueRight);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitAttr(LunaLangParser.AttrContext ctx) {
-        ctx.lvalue().accept(this);
-        var objPointer = operands.pop();
+        try {
+            ctx.lvalue().accept(this);
+            var objPointer = operands.pop();
+            ctx.exp().accept(this);
+            var value = operands.pop();
 
-        ctx.exp().accept(this);
-        var value = operands.pop();
+            if(objPointer instanceof Pointer pointer){
+                pointer.setValue(value);
+            }
 
-        if(objPointer instanceof Pointer pointer){
-            pointer.setValue(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-
-        return value;
     }
 
     @Override
     public Object visitLvalueArr(LunaLangParser.LvalueArrContext ctx) {
-        ctx.exp().accept(this);
-        LunaNumber value = (LunaNumber)operands.pop();
-        ctx.lvalue().accept(this);
-        Pointer pointer = (Pointer)operands.pop();
-        var arr = (Object[])pointer.getValue();
-        ArrayPointer arrPointer = new ArrayPointer(arr, value.$int());
-        operands.push(arrPointer);
-        return arrPointer;
+        try {
+            ctx.exp().accept(this);
+            LunaNumber value = (LunaNumber)operands.pop();
+            ctx.lvalue().accept(this);
+            Pointer pointer = (Pointer)operands.pop();
+            var arr = (Object[])pointer.getValue();
+            ArrayPointer arrPointer = new ArrayPointer(arr, value.$int());
+            operands.push(arrPointer);
+            return arrPointer;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitLvalueId(LunaLangParser.LvalueIdContext ctx) {
-        var name = ctx.ID().getText();
-        var pointer = env.getPointer(name);
-        operands.push(pointer);
-        return pointer;
+        try {
+            var name = ctx.ID().getText();
+            var pointer = env.getPointer(name);
+            operands.push(pointer);
+            return pointer;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitLvalueAccess(LunaLangParser.LvalueAccessContext ctx) {
-        ctx.lvalue().accept(this);
-        Pointer pointer = (Pointer)operands.pop();
-        LunaData data = (LunaData)pointer.getValue();
-        String propName = ctx.ID().getText();
-        RefPointer propPointer = data.getProperty(propName);
-        LunaRuntimeException.ThrowIfNull(propPointer, ctx, String.format("The %s property has not been set", propName));
-        operands.push(propPointer);
-        return propPointer;
+        try {
+            ctx.lvalue().accept(this);
+            Pointer pointer = (Pointer)operands.pop();
+            LunaData data = (LunaData)pointer.getValue();
+            String propName = ctx.ID().getText();
+            RefPointer propPointer = data.getProperty(propName);
+            LunaRuntimeException.ThrowIfNull(propPointer, ctx, String.format("The %s property has not been set", propName));
+            operands.push(propPointer);
+            return propPointer;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitPexpLvalue(LunaLangParser.PexpLvalueContext ctx) {
-        ctx.lvalue().accept(this);
-        var pointer = (Pointer)operands.pop();
-        operands.push(pointer.getValue());
-        return pointer.getValue();
+        try {
+            ctx.lvalue().accept(this);
+            var pointer = (Pointer)operands.pop();
+            operands.push(pointer.getValue());
+            return pointer.getValue();
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitEquals(LunaLangParser.EqualsContext ctx) {
-        ctx.l.accept(this);
-        var lvalue = (LunaComparable)operands.pop();
-        ctx.right.accept(this);
-        var rvalue = (LunaComparable)operands.pop();
+        try {
+            ctx.l.accept(this);
+            var lvalue = (LunaComparable)operands.pop();
+            ctx.right.accept(this);
+            var rvalue = (LunaComparable)operands.pop();
 
-        LunaBoolean resultValue = lvalue.equal(rvalue);
-        operands.push(resultValue);
-        return resultValue;
+            LunaBoolean resultValue = lvalue.equal(rvalue);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitLesser_than(LunaLangParser.Lesser_thanContext ctx) {
-        ctx.left.accept(this);
-        var lvalue = (LunaComparable)operands.pop();
-        ctx.right.accept(this);
-        var rvalue = (LunaComparable)operands.pop();
+        try {
+            ctx.left.accept(this);
+            var lvalue = (LunaComparable)operands.pop();
+            ctx.right.accept(this);
+            var rvalue = (LunaComparable)operands.pop();
 
-        LunaBoolean resultValue = lvalue.lt(rvalue);
-        operands.push(resultValue);
-        return resultValue;
+            LunaBoolean resultValue = lvalue.lt(rvalue);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitAndexp(LunaLangParser.AndexpContext ctx) {
-        ctx.left.accept(this);
-        var lvalue = (LunaBoolean)operands.pop();
+        try {
+            ctx.left.accept(this);
+            var lvalue = (LunaBoolean)operands.pop();
 
-        ctx.right.accept(this);
-        var rvalue = (LunaBoolean)operands.pop();
+            ctx.right.accept(this);
+            var rvalue = (LunaBoolean)operands.pop();
 
-        var resultValue = lvalue.and(rvalue);
-        operands.push(resultValue);
-        return resultValue;
+            var resultValue = lvalue.and(rvalue);
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitMinusexp(LunaLangParser.MinusexpContext ctx) {
-        ctx.sexp().accept(this);
-        var value = (LunaNumber)operands.pop();
-        LunaNumber resultValue = value.minus();
-        operands.push(resultValue);
-        return resultValue;
+        try {
+            ctx.sexp().accept(this);
+            var value = (LunaNumber)operands.pop();
+            LunaNumber resultValue = value.minus();
+            operands.push(resultValue);
+            return resultValue;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitNexp(LunaLangParser.NexpContext ctx) {
-        ctx.sexp().accept(this);
-        var value = ((LunaBoolean)operands.pop()).neg();
-        operands.push(value);
-        return value;
+        try {
+            ctx.sexp().accept(this);
+            var value = ((LunaBoolean)operands.pop()).neg();
+            operands.push(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitInt(LunaLangParser.IntContext ctx) {
-        String valueStr = ctx.INT().getText();
-        Integer value = Integer.parseInt(valueStr);
-        operands.push(new LunaInteger(value));
-        return value;
+        try {
+            String valueStr = ctx.INT().getText();
+            Integer value = Integer.parseInt(valueStr);
+            operands.push(new LunaInteger(value));
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
