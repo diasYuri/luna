@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class LunaChar {
     private final Character value;
-
+    public LunaChar() {this.value = null;}
     public LunaChar(Character value) {
         this.value = value;
     }

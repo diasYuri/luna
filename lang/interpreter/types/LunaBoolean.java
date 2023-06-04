@@ -2,7 +2,9 @@ package lang.interpreter.types;
 
 public class LunaBoolean implements LunaEquatable {
     private final Boolean value;
-
+    public LunaBoolean() {
+        this.value = false;
+    }
     public LunaBoolean(Boolean value) {
         this.value = value;
     }
