@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Stack;
 
 public class Environment {
-    private final Stack<Object> operands = new Stack<>();
     private final Stack<Scope> scopeStack = new Stack<>();
 
     public RefPointer getPointer(String name){

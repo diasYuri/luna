@@ -353,7 +353,14 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitEquals(LunaLangParser.EqualsContext ctx) {
-        return super.visitEquals(ctx);
+        ctx.l.accept(this);
+        var lvalue = (LunaComparable)operands.pop();
+        ctx.right.accept(this);
+        var rvalue = (LunaComparable)operands.pop();
+
+        LunaBoolean resultValue = lvalue.equal(rvalue);
+        operands.push(resultValue);
+        return resultValue;
     }
 
     @Override
@@ -408,31 +415,47 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitFloat(LunaLangParser.FloatContext ctx) {
-        String valueStr = ctx.FLOAT().getText();
-        Float value = Float.parseFloat(valueStr);
-        operands.push(new LunaFloat(value));
-        return value;
+        try {
+            String valueStr = ctx.FLOAT().getText();
+            Float value = Float.parseFloat(valueStr);
+            operands.push(new LunaFloat(value));
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitTrue(LunaLangParser.TrueContext ctx) {
-        LunaBoolean value = LunaBoolean.$true();
-        operands.push(value);
-        return value;
+        try {
+            LunaBoolean value = LunaBoolean.$true();
+            operands.push(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitFalse(LunaLangParser.FalseContext ctx) {
-        LunaBoolean value = LunaBoolean.$false();
-        operands.push(value);
-        return value;
+        try {
+            LunaBoolean value = LunaBoolean.$false();
+            operands.push(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
     public Object visitChar(LunaLangParser.CharContext ctx) {
-        LunaChar value = LunaChar.parse(ctx.CHAR().getText());
-        operands.push(value);
-        return value;
+        try {
+            LunaChar value = LunaChar.parse(ctx.CHAR().getText());
+            operands.push(value);
+            return value;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 
     @Override
@@ -452,40 +475,49 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             operands.push(instance);
             return instance;
         }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
 
     @Override
     public Object visitArrayType(LunaLangParser.ArrayTypeContext ctx) {
-        ctx.type().accept(this);
-        ((TypeDescriptor)operands.peek()).convertInArrayType();
-        return operands.peek();
+        try {
+            ctx.type().accept(this);
+            ((TypeDescriptor)operands.peek()).convertInArrayType();
+            return operands.peek();
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
+
 
     @Override
     public Object visitBtype(LunaLangParser.BtypeContext ctx) {
-        if(ctx.TYPE_INT() != null){
-            operands.push(new PrimitiveTypeDescriptor(LunaInteger.class));
-        }
-        if(ctx.TYPE_FLOAT() != null){
-            operands.push(new PrimitiveTypeDescriptor(LunaFloat.class));
-        }
-        if(ctx.TYPE_BOOL() != null){
-            operands.push(new PrimitiveTypeDescriptor(LunaBoolean.class));
-        }
-        if(ctx.TYPE_CHAR() != null){
-            operands.push(new PrimitiveTypeDescriptor(LunaChar.class));
-        }
-        if(ctx.ID_DATA() != null){
-            String id = ctx.ID_DATA().getText();
-            var descriptor = dataDefinitions.get(id);
-            if(descriptor == null){
-                throw new RuntimeException(String.format("the type %s has not been defined", id));
+        try{
+            if(ctx.TYPE_INT() != null){
+                operands.push(new PrimitiveTypeDescriptor(LunaInteger.class));
             }
-            operands.push(new DataTypeDescriptor(id, descriptor));
+            if(ctx.TYPE_FLOAT() != null){
+                operands.push(new PrimitiveTypeDescriptor(LunaFloat.class));
+            }
+            if(ctx.TYPE_BOOL() != null){
+                operands.push(new PrimitiveTypeDescriptor(LunaBoolean.class));
+            }
+            if(ctx.TYPE_CHAR() != null){
+                operands.push(new PrimitiveTypeDescriptor(LunaChar.class));
+            }
+            if(ctx.ID_DATA() != null){
+                String id = ctx.ID_DATA().getText();
+                var descriptor = dataDefinitions.get(id);
+                if(descriptor == null){
+                    throw new RuntimeException(String.format("the type %s has not been defined", id));
+                }
+                operands.push(new DataTypeDescriptor(id, descriptor));
+            }
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
         }
-        return null;
     }
 
     @Override
@@ -495,7 +527,11 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitNull(LunaLangParser.NullContext ctx) {
-        operands.push(null);
-        return null;
+        try{
+            operands.push(null);
+            return null;
+        }catch (Exception e){
+            throw new LunaRuntimeException(ctx, e.getMessage());
+        }
     }
 }
