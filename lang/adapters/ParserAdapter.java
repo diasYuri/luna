@@ -4,8 +4,15 @@ import lang.ast.Data;
 import lang.ast.Declaration;
 import lang.ast.Param;
 import lang.ast.Params;
+import lang.ast.Return;
+import lang.ast.Exps;
+import lang.ast.abstracts.Expr;
 import lang.ast.abstracts.Node;
 import lang.ast.abstracts.Type;
+import lang.ast.Print;
+import lang.ast.Multi;
+import lang.ast.Div;
+import lang.ast.Add;
 import lang.parser.antlr.LunaLangParser;
 
 public class ParserAdapter {
@@ -21,6 +28,109 @@ public class ParserAdapter {
     }
 
      */
+    public Div mapFrom(LunaLangParser.DivContext ctx){
+        var lf = ctx.left.start.getLine();
+        var cf = ctx.left.start.getCharPositionInLine();
+
+        var lr = ctx.right.start.getLine();
+        var cr = ctx.right.start.getCharPositionInLine();
+
+        var leftExpr = new Expr(lf,cf);
+        var rightExpr = new Expr(lr,cr);
+
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine();
+
+        return new Div(l,c,leftExpr,rightExpr);
+
+    }
+    
+    public Mod mapFrom(LunaLangParser.ModContext ctx){
+        var lf = ctx.left.start.getLine();
+        var cf = ctx.left.start.getCharPositionInLine();
+
+        var lr = ctx.right.start.getLine();
+        var cr = ctx.right.start.getCharPositionInLine();
+
+        var leftExpr = new Expr(lf,cf);
+        var rightExpr = new Expr(lr,cr);
+
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine();
+
+        return new Mod(l,c,leftExpr,rightExpr);
+
+    }
+     
+     
+     
+     public Add mapFrom(LunaLangParser.AddContext ctx){
+        var lf = ctx.left.start.getLine();
+        var cf = ctx.left.start.getCharPositionInLine();
+
+        var lr = ctx.right.start.getLine();
+        var cr = ctx.right.start.getCharPositionInLine();
+
+        var leftExpr = new Expr(lf,cf);
+        var rightExpr = new Expr(lr,cr);
+
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine();
+
+        return new Add(l,c,leftExpr,rightExpr);
+
+    }
+
+
+     public Multi mapFrom(LunaLangParser.MultContext ctx){
+        var lf = ctx.left.start.getLine();
+        var cf = ctx.left.start.getCharPositionInLine();
+
+        var lr = ctx.right.start.getLine();
+        var cr = ctx.right.start.getCharPositionInLine();
+
+        var leftExpr = new Expr(lf,cf);
+        var rightExpr = new Expr(lr,cr);
+
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine();
+
+        return new Multi(l,c,leftExpr,rightExpr);
+
+     }
+    
+     public Return mapFrom(LunaLangParser.ReturnContext ctx){
+        var exps = mapFrom(ctx.exps());
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine(); 
+        return new Return(l,c,exps);
+    }
+
+    
+    public Print mapFrom(LunaLangParser.PrintContext ctx){
+        var expr = mapFrom(ctx.exp());
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine(); 
+        return new Print(l,c,expr);
+    }
+
+
+    public Expr mapFrom(LunaLangParser.ExpContext ctx){
+        var l = ctx.start.getLine();
+        var c = ctx.start.getCharPositionInLine(); 
+        return new Expr(l,c);
+    }
+
+    public Exps mapFrom(LunaLangParser.ExpsContext ctx){
+        var exps = new Exps(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        for(int i = 0; i < ctx.ID().size(); i ++){
+            var l = ctx.ID(i).getSymbol().getLine();
+            var c = ctx.ID(i).getSymbol().getCharPositionInLine();
+            var expr = new Expr(l,c);
+            exps.addExpression(expr);
+        }
+        return exps;
+    }
 
     public Params mapFrom(LunaLangParser.ParamsContext ctx){
         var params = new Params(ctx.start.getLine(), ctx.start.getCharPositionInLine());

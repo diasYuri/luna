@@ -8,18 +8,14 @@ import lang.ast.abstracts.Cmd;
 import lang.ast.abstracts.Expr;
 
 public class Return extends Cmd {
-    private List<Expr> expressions;
+    private Exps expressions;
 
-    public Return(int l, int c) {
+    public Return(int l, int c, Exps expressions) {
         super(l, c);
-        this.expressions = new ArrayList<>();
+        this.expressions = expressions;
     }
 
-    public void addExpression(Expr expression) {
-        expressions.add(expression);
-    }
-
-    public List<Expr> getExpressions() {
+    public Exps getExpressions() {
         return expressions;
     }
 
