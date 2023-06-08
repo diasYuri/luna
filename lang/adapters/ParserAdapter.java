@@ -2,6 +2,8 @@ package lang.adapters;
 
 import lang.ast.Data;
 import lang.ast.Declaration;
+import lang.ast.Param;
+import lang.ast.Params;
 import lang.ast.abstracts.Node;
 import lang.ast.abstracts.Type;
 import lang.parser.antlr.LunaLangParser;
@@ -11,7 +13,26 @@ public class ParserAdapter {
         List<Data> dataList = ctx.data().stream().map(this::mapFrom).toList();
         List<Function> functionList = ctx.func().stream().map(this::mapFrom).toList();
         return new Program(ctx.start.getLine(), ctx.start.getCharPositionInLine(), dataList, functionList);
-    }*/
+    }
+
+    public Function mapFrom(LunaLangParser.FuncContext ctx){
+        var params = mapFrom(ctx.params());
+        var cmd = mapFrom(ctx.)
+    }
+
+     */
+
+    public Params mapFrom(LunaLangParser.ParamsContext ctx){
+        var params = new Params(ctx.start.getLine(), ctx.start.getCharPositionInLine());
+        for (int i = 0; i < ctx.ID().size(); i++) {
+            var l = ctx.ID(i).getSymbol().getLine();
+            var c = ctx.ID(i).getSymbol().getCharPositionInLine();
+            var id = ctx.ID(i).getText();
+            var type = ctx.type(i).getText();
+            params.addParam(new Param(l, c, id, type));
+        }
+        return params;
+    }
 
     public Data mapFrom(LunaLangParser.DataContext ctx){
         var l = ctx.start.getLine();
