@@ -1,5 +1,7 @@
 package lang.ast.abstracts;
 
+import lang.ast.Expr;
+
 public abstract class BinOp extends Expr {
     private Expr left;
     private Expr right;

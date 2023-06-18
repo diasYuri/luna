@@ -1,15 +1,14 @@
 package lang.ast;
 
-
-import lang.ast.abstracts.Expr;
-
-
-public abstract class LValue extends Expr{
+public class LValue extends Expr{
     // Função importante para os valores literais
-    public abstract String getId();
+    private String id;
+    public String getId()
+    {return id;}
 
-    public LValue(int line, int column){
+    public LValue(int line, int column, String id){
         super(line, column);
+        this.id = id;
     }
 
 }

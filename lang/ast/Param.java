@@ -1,7 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-
 public class Param extends Expr {
     private String id;
     private String type;

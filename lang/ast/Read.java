@@ -1,17 +1,15 @@
 package lang.ast;
 
-import lang.ast.abstracts.Cmd;
-
 public class Read extends Cmd {
-    private String variableName;
+    private LValue variable;
 
-    public Read(int l, int c, String variableName) {
+    public Read(int l, int c, LValue variable) {
         super(l, c);
-        this.variableName = variableName;
+        this.variable = variable;
     }
 
-    public String getVariableName() {
-        return variableName;
+    public LValue getVariableName() {
+        return variable;
     }
 
     

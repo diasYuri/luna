@@ -1,6 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
 import lang.ast.abstracts.Type;
 
 public class Declaration extends Expr {

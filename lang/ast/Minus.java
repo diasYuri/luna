@@ -1,12 +1,26 @@
 package lang.ast;
 
-import lang.ast.abstracts.BinOp;
-import lang.ast.abstracts.Expr;
+import lang.ast.Expr;
 
 
-public class Minus extends BinOp {
-    public Minus(int l, int c, Expr left, Expr right) {
-        super(l, c, left, right);
+public class Minus extends Expr {
+    
+    private Expr exp;
+
+    public Minus(int line, int column, Expr exp) {
+        super(line, column);
+        this.exp = exp;
     }
-}
 
+    // @Override
+    // public String toString(){
+    //     return " - " + exp.toString();
+    // }
+
+    // @Override
+    // public void accept(Visitor v) {
+    //     v.visit(this);
+    // }
+
+
+}

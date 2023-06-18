@@ -1,9 +1,6 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
 import lang.ast.abstracts.Type;
-import lang.ast.abstracts.Cmd;
-
 
 import java.util.List;
 
@@ -20,6 +17,16 @@ public class Function extends Expr {
         this.returnTypes = returnTypes;
         this.body = body;
     }
+
+
+
+    public Function(int l, int c, String id, Params params, List<Cmd> body) {
+        super(l, c);
+        this.id = id;
+        this.params = params;
+        this.body = body;
+    }
+
 
     public String getId() {
         return id;

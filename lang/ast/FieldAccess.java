@@ -1,7 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-
 public class FieldAccess extends Expr {
     private Expr expr;
     private String identifier;

@@ -1,7 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-
 public class ID extends Expr {
     private final String name;
 

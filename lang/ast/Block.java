@@ -1,7 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Cmd;
-
 import java.util.List;
 
 public class Block extends Cmd {

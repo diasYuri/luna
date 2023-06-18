@@ -1,9 +1,5 @@
 package lang.ast;
 
-
-import lang.ast.abstracts.Expr;
-
-
 public class Not extends Expr{
     private Expr expr;
 

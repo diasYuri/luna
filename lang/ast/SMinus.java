@@ -1,9 +1,5 @@
 package lang.ast;
 
-
-import lang.ast.abstracts.Expr;
-
-
 public class SMinus extends Expr{
     private Expr expr;
 

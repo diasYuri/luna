@@ -2,7 +2,6 @@ package lang.ast;
 
 
 
-import lang.ast.abstracts.Expr;
 import lang.ast.abstracts.Type;
 
 public class NewTypeInstance extends Expr {

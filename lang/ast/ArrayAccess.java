@@ -1,22 +1,22 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-
 public class ArrayAccess extends Expr {
-    private Expr array;
-    private Expr index;
+    private LValue lValue;
+    private Expr expr;
 
-    public ArrayAccess(int l, int c, Expr array, Expr index) {
+    public ArrayAccess(int l, int c,LValue lValue, Expr expr) {
         super(l, c);
-        this.array = array;
-        this.index = index;
+        this.lValue = lValue;
+        this.expr = expr;
     }
 
-    public Expr getArray() {
-        return array;
+
+    public LValue getLValue() {
+        return lValue;
     }
 
-    public Expr getIndex() {
-        return index;
+    public Expr getExp() {
+        return expr;
     }
+   
 }

@@ -1,8 +1,5 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-import lang.ast.abstracts.Cmd;
-
 public class If extends Cmd {
     private Expr condition;
     private Cmd body;

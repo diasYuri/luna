@@ -1,20 +1,17 @@
 package lang.ast;
 
-import lang.ast.abstracts.Expr;
-import lang.ast.abstracts.Cmd;
-
 public class Attribution extends Cmd {
-    private String variableName;
+    private LValue variable;
     private Expr expression;
 
-    public Attribution(int l, int c, String variableName, Expr expression) {
+    public Attribution(int l, int c, LValue variable, Expr expression) {
         super(l, c);
-        this.variableName = variableName;
+        this.variable = variable;
         this.expression = expression;
     }
 
-    public String getVariableName() {
-        return variableName;
+    public LValue getVariable() {
+        return variable;
     }
 
     public Expr getExpression() {
