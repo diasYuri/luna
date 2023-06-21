@@ -27,6 +27,11 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
         notificator.displayError();
     }
 
+    @Override
+    public void showEnvType() {
+        env.printEnv();
+    }
+
     public ArrayList<String> getErrors(){
         return notificator.errors();
     }
@@ -139,7 +144,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
         if(!rEnv.match((ArrayList<SType>) types)){
             notificator.addError(
                     String.format(
-                            "O retorno não bate com o retorno esperado pela função."),
+                            "O tipo do retorno não bate com o tipo de retorno esperado pela função."),
                     ctx);
         }
 
@@ -200,7 +205,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
                     ctx);
         }else{
             for(var i=0; i<ctx.lvalue().size(); i++){
-                var typePointer = (SType)ctx.lvalue(i).accept(this);
+                var typePointer = (SType)getLvalue(ctx.lvalue(i));
                 var value = func.returns().get(i);
                 var type = attribute(typePointer, value, ctx);
                 types.add(type);
@@ -253,9 +258,29 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
     public Object visitAttr(LunaLangParser.AttrContext ctx) {
         var value = (SType)ctx.exp().accept(this);
 
-        var typePointer = (SType)ctx.lvalue().accept(this);
+        var typePointer = (SType)getLvalue(ctx.lvalue());
 
         return attribute(typePointer, value, ctx);
+    }
+
+    public Object getLvalue(LunaLangParser.LvalueContext ctx){
+        if(ctx instanceof LunaLangParser.LvalueAccessContext aCtx){
+            return aCtx.accept(this);
+        }
+        if(ctx instanceof LunaLangParser.LvalueArrContext arCtx){
+            return arCtx.accept(this);
+        }
+        if(ctx instanceof LunaLangParser.LvalueIdContext idCtx){
+            var id = idCtx.ID().getText();
+            var type = env.get(id);
+            if(type == null){
+                var typeEmpty = new STypeUndeclared(id);
+                env.attribute(id, typeEmpty);
+                return typeEmpty;
+            }
+            return type;
+        }
+        throw new LunaRuntimeException(ctx, "Error");
     }
 
     public SType attribute(SType typePointer, SType value, ParserRuleContext ctx){
@@ -283,10 +308,9 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
     public Object visitLvalueId(LunaLangParser.LvalueIdContext ctx) {
         var id = ctx.ID().getText();
         var type = env.get(id);
-        if(type == null){
-            var typeEmpty = new STypeUndeclared(id);
-            env.attribute(id, typeEmpty);
-            return typeEmpty;
+        if(type == null || type instanceof STypeUndeclared){
+            notificator.addError(String.format("A variável %s não foi declarada", id), ctx);
+            return STypeError.getInstance();
         }
         return type;
     }

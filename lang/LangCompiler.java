@@ -6,6 +6,7 @@ import lang.interpreter.LunaInterpreter;
 import lang.parser.LunaParseAdaptor;
 import lang.parser.ParseAdaptor;
 import lang.parser.TestParser;
+import lang.semantics.TypeChecker;
 
 public class LangCompiler{
    // Recupera o nome base (sem extensão) de um arquivo.
@@ -17,9 +18,9 @@ public class LangCompiler{
           
           System.out.println(" -bs : Executa uma bateria de testes sintáticos");
           System.out.println(" -bty : Executa uma bateria de testes no sistemas de tipos");
-          System.out.println(" -bsm : Executa uma bateria de testes no interpretador");          
-        
-          System.out.println(" -pp: Pretty print program.");        
+          System.out.println(" -bsm : Executa uma bateria de testes no interpretador");
+
+          System.out.println(" -pp: Pretty print program.");
           System.out.println(" -tp: Verficar tipos e imprimir o ambiente de tipos");
           System.out.println(" -i : Apenas interpretar");
           
@@ -62,8 +63,7 @@ public class LangCompiler{
             // result.accept(iv);
           }
           else if(args[0].equals("-tp") ){
-             //iv = new TypeChecker();
-             //result.accept(iv);
+              TypeChecker.check((RootNode)result);
           }
           else if(args[0].equals("-pp") ){
 	      // iv = new PPrint();

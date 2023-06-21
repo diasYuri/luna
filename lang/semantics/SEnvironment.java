@@ -34,6 +34,10 @@ public class SEnvironment {
     public void popLevel(){
         stack.peek().popLevel();
     }
+
+    public void printEnv(){
+        System.out.println(stack.toString());
+    }
 }
 
 
@@ -70,5 +74,10 @@ class StackScope{
     public void popLevel(){
         this.stack.remove(this.level);
         this.level--;
+    }
+
+    @Override
+    public String toString() {
+        return stack.toString();
     }
 }

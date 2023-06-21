@@ -9,7 +9,7 @@ public class STypeBoolean extends SType {
 
     @Override
     public boolean match(SType t) {
-        return t instanceof STypeBoolean || t instanceof  STypeDynamic;
+        return t instanceof STypeBoolean || t instanceof STypeDynamic;
     }
 
     @Override

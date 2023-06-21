@@ -16,7 +16,7 @@ public class STypeData extends SType {
 
     @Override
     public boolean match(SType t) {
-        return this.equals(t);
+        return this.equals(t) || t instanceof STypeDynamic;
     }
 
     @Override

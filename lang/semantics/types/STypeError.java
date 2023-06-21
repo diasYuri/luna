@@ -1,7 +1,7 @@
 package lang.semantics.types;
 
-public class STypeError extends SType{
-    private static STypeError instance;
+public class STypeError extends STypeDynamic{
+    private static STypeError instance = new STypeError();
 
     public static STypeError getInstance() {return instance;}
 
