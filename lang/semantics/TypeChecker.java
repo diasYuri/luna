@@ -7,6 +7,5 @@ public class TypeChecker {
         var typeAnalyzer = new TypeAnalyzer();
         var result = typeAnalyzer.Analyzer(root.Ctx());
         result.showErrors();
-        result.showEnvType();
     }
 }

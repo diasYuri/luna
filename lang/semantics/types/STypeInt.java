@@ -8,7 +8,7 @@ public class STypeInt extends SType {
 
     @Override
     public boolean match(SType t) {
-        return (t instanceof STypeInt || t instanceof STypeFloat || t instanceof STypeDynamic);
+        return (t instanceof STypeInt || t instanceof STypeDynamic);
     }
 
     @Override

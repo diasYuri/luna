@@ -325,7 +325,7 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         try {
             ctx.exp().accept(this);
             var value = operands.pop();
-            System.out.println(value);
+            System.out.print(value);
             return null;
         }catch(LunaRuntimeException e){
             throw e;

@@ -14,7 +14,7 @@ public abstract class TypeDescriptor {
         return this.type;
     }
     public void convertInArrayType(){
-        this.type = this.type.getComponentType();
+        this.type = this.type.arrayType();
     }
     public Object[] newArrInstance(int size){
         return (Object[]) Array.newInstance(this.type, size);

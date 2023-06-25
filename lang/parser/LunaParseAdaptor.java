@@ -24,6 +24,10 @@ public class LunaParseAdaptor implements ParseAdaptor{
 
         ParserRuleContext tree = parser.prog();
 
+        if(parser.getNumberOfSyntaxErrors() > 0){
+            throw new RuntimeException("Erro ao realizar o parser");
+        }
+
         return new RootNode(tree);
     }
 }

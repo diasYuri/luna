@@ -131,7 +131,26 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
                         : null;
         var func = functionsMap.get(funcName, (ArrayList)params);
         if(func == null){
-            notificator.addError(String.format("A função %s(%s) não foi definida", funcName, params), ctx);
+            String strParams = "";
+            if(params instanceof ArrayList arrayParams){
+                strParams = String.join(",", arrayParams.stream().map(x->x.toString()).toList());
+            }
+            notificator.addError(String.format("A função %s(%s) não foi definida", funcName, strParams), ctx);
+        }else{
+            Integer intOffset = null;
+            try {
+                intOffset = Integer.parseInt(ctx.offset.getText().trim());
+            } catch (NumberFormatException nfe) {}
+
+            if(intOffset != null){
+                if(func.returns() == null){
+                    notificator.addError("A função chamada não possui retorno", ctx);
+                }
+                if(intOffset >= func.returns().size()){
+                    notificator.addError(String.format("A função chamada não possui retorno no offset %d", intOffset), ctx);
+                }
+                return func.returns().get(intOffset);
+            }
         }
 
         return STypeDynamic.instance();
@@ -200,7 +219,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
         var types = new ArrayList<SType>();
         if(func.returns().size() < ctx.lvalue().size()){
             notificator.addError(
-                    String.format("A função %s retorna %d valores, impossivel fazer o bind para %d variaveis",
+                    String.format("A função %s retorna %d valores, impossível fazer o bind para %d variáveis",
                             funcName, func.returns().size(), ctx.lvalue().size()),
                     ctx);
         }else{
@@ -229,6 +248,9 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
         var nameData = ctx.ID_DATA().getText();
         if(reservedTypes.contains(nameData)){
             notificator.addError(String.format("O tipo %s já é um tipo reservado da linguagem", nameData), ctx);
+        }
+        if(dataDeclarations.containsKey(nameData)){
+            notificator.addError(String.format("O tipo %s já foi declarado", nameData), ctx);
         }
         dataDeclarations.put(nameData, STypeData.Declare(nameData));
     }
