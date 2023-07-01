@@ -6,6 +6,7 @@ import lang.interpreter.LunaInterpreter;
 import lang.parser.LunaParseAdaptor;
 import lang.parser.ParseAdaptor;
 import lang.parser.TestParser;
+import lang.semantics.TypeChecker;
 
 public class LangCompiler{
    // Recupera o nome base (sem extensão) de um arquivo.
@@ -17,9 +18,10 @@ public class LangCompiler{
           
           System.out.println(" -bs : Executa uma bateria de testes sintáticos");
           System.out.println(" -bty : Executa uma bateria de testes no sistemas de tipos");
-          System.out.println(" -bsm : Executa uma bateria de testes no interpretador");          
-        
-          System.out.println(" -pp: Pretty print program.");        
+          System.out.println(" -bsm : Executa uma bateria de testes no interpretador");
+          System.out.println(" -bst : Executa uma bateria de testes semanticos");
+
+          System.out.println(" -pp: Pretty print program.");
           System.out.println(" -tp: Verficar tipos e imprimir o ambiente de tipos");
           System.out.println(" -i : Apenas interpretar");
           
@@ -44,6 +46,11 @@ public class LangCompiler{
               TestParser tp = new TestParser(langParser);
               return;
           }
+           if(args[0].equals("-bst") ){
+               System.out.println("Executando bateria de testes semanticos:");
+               TypeChecker.batchTest();
+               return;
+           }
           if(args.length != 2){
               System.out.println("Para usar essa opção, especifique um nome de arquivo");
               return; 
@@ -62,8 +69,13 @@ public class LangCompiler{
             // result.accept(iv);
           }
           else if(args[0].equals("-tp") ){
-             //iv = new TypeChecker();
-             //result.accept(iv);
+              TypeChecker.check((RootNode)result, true);
+          }
+          else if(args[0].equals("-ti") ){
+              var resultAnalyze = TypeChecker.check((RootNode)result, true);
+              if(resultAnalyze.hasError()) return;
+              LunaInterpreter interpreter = new LunaInterpreter();
+              interpreter.interpreter((RootNode)result);
           }
           else if(args[0].equals("-pp") ){
 	      // iv = new PPrint();

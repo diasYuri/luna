@@ -2,8 +2,6 @@ package lang.interpreter;
 
 import lang.ast.RootNode;
 import lang.interpreter.exceptions.LunaRuntimeException;
-import lang.parser.antlr.LunaLangBaseVisitor;
-import lang.parser.antlr.LunaLangParser;
 import lang.interpreter.types.*;
 import lang.interpreter.types.descriptors.DataTypeDescriptor;
 import lang.interpreter.types.descriptors.PrimitiveTypeDescriptor;
@@ -11,8 +9,13 @@ import lang.interpreter.types.descriptors.TypeDescriptor;
 import lang.interpreter.types.pointers.ArrayPointer;
 import lang.interpreter.types.pointers.Pointer;
 import lang.interpreter.types.pointers.RefPointer;
+import lang.parser.antlr.LunaLangBaseVisitor;
+import lang.parser.antlr.LunaLangParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
     private final HashMap<String, LunaLangParser.FuncContext> funcs = new HashMap<>();
@@ -50,7 +53,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
             env.newScope();
             return main.accept(this);
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -67,7 +73,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 dataDefinition.put(propName, descriptor.getType());
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -101,7 +110,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 }
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -140,7 +152,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var value = response.get(offset.$int());
             operands.push(value);
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -166,7 +181,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 }
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -180,7 +198,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
             operands.push(params);
             return params;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -192,7 +213,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var value = operands.peek();
             returnContextSignal.emitSignal();
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -209,7 +233,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
             env.endCurrentScope();
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -225,7 +252,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 env.endCurrentScope();
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -244,7 +274,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
 
             operands.push(arrayList);
             return arrayList;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -262,7 +295,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 }
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -276,7 +312,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             String value = scanner.nextLine();
             pointer.setValue(value);
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -286,9 +325,12 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         try {
             ctx.exp().accept(this);
             var value = operands.pop();
-            System.out.println(value);
+            System.out.print(value);
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -303,7 +345,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = valueLeft.add(valueRight);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -318,7 +363,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = valueLeft.sub(valueRight);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -333,7 +381,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = valueLeft.mult(valueRight);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -348,7 +399,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = valueLeft.div(valueRight);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -363,7 +417,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = valueLeft.mod(valueRight);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -381,7 +438,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
 
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -397,7 +457,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             ArrayPointer arrPointer = new ArrayPointer(arr, value.$int());
             operands.push(arrPointer);
             return arrPointer;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -409,7 +472,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var pointer = env.getPointer(name);
             operands.push(pointer);
             return pointer;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -425,7 +491,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaRuntimeException.ThrowIfNull(propPointer, ctx, String.format("The %s property has not been set", propName));
             operands.push(propPointer);
             return propPointer;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -437,7 +506,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var pointer = (Pointer)operands.pop();
             operands.push(pointer.getValue());
             return pointer.getValue();
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -453,7 +525,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaBoolean resultValue = lvalue.equal(rvalue);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -469,7 +544,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaBoolean resultValue = lvalue.lt(rvalue);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -486,7 +564,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var resultValue = lvalue.and(rvalue);
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -499,7 +580,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaNumber resultValue = value.minus();
             operands.push(resultValue);
             return resultValue;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -511,7 +595,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             var value = ((LunaBoolean)operands.pop()).neg();
             operands.push(value);
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -523,7 +610,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             Integer value = Integer.parseInt(valueStr);
             operands.push(new LunaInteger(value));
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -535,7 +625,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             Float value = Float.parseFloat(valueStr);
             operands.push(new LunaFloat(value));
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -546,7 +639,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaBoolean value = LunaBoolean.$true();
             operands.push(value);
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -557,7 +653,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaBoolean value = LunaBoolean.$false();
             operands.push(value);
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -568,7 +667,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             LunaChar value = LunaChar.parse(ctx.CHAR().getText());
             operands.push(value);
             return value;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -589,7 +691,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             }
             operands.push(instance);
             return instance;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -600,7 +705,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
             ctx.type().accept(this);
             ((TypeDescriptor)operands.peek()).convertInArrayType();
             return operands.peek();
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -630,7 +738,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
                 operands.push(new DataTypeDescriptor(id, descriptor));
             }
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }
@@ -645,7 +756,10 @@ public class LunaInterpreter extends LunaLangBaseVisitor<Object> {
         try{
             operands.push(null);
             return null;
-        }catch (Exception e){
+        }catch(LunaRuntimeException e){
+            throw e;
+        }
+        catch (Exception e){
             throw new LunaRuntimeException(ctx, e.getMessage());
         }
     }

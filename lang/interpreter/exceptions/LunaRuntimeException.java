@@ -8,6 +8,7 @@ public class LunaRuntimeException extends RuntimeException{
         super(String.format(" Linha: %s Coluna: %s - ", ctx.start.getLine(), ctx.start.getCharPositionInLine())+message);
     }
 
+
     public static void ThrowIfNull(Object value, ParserRuleContext ctx, String message){
         if(value == null){
             throw new LunaRuntimeException(ctx, message);
