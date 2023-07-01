@@ -5,6 +5,7 @@ import lang.semantics.types.SType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FunctionsMap {
     private HashMap<String, ArrayList<FunctionsDefinition>> map = new HashMap<>();
@@ -52,9 +53,9 @@ public class FunctionsMap {
 
 class FunctionsDefinition{
     private String name;
-
     private ArrayList<SType> params;
     private ArrayList<SType> returns;
+    private Map<String, SType> symbols;
 
     public String name() {
         return name;
@@ -77,8 +78,6 @@ class FunctionsDefinition{
     public ArrayList<SType> returns() {
         return returns;
     }
-
-
 
     public FunctionsDefinition setReturns(ArrayList<SType> returns) {
         this.returns = returns;
