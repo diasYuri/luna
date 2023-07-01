@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyzed {
+public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
     private final ErrorNotificator notificator = new ErrorNotificator();
     private final HashMap<String, STypeData> dataDeclarations = new HashMap<>();
     private final FunctionsMap functionsMap = new FunctionsMap();
@@ -21,19 +21,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> implements Analyze
     public Analyzed Analyzer(ParserRuleContext root){
         notificator.clear();
         root.accept(this);
-        return this;
-    }
-    public void showErrors(){
-        notificator.displayError();
-    }
-
-    @Override
-    public void showEnvType() {
-        env.printEnv();
-    }
-
-    public ArrayList<String> getErrors(){
-        return notificator.errors();
+        return new Analyzed(notificator.errors());
     }
 
     @Override

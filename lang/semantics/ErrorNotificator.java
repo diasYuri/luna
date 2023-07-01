@@ -18,11 +18,6 @@ public class ErrorNotificator {
     public void clear(){
         errors.clear();
     }
-    public void displayError(){
-        for (var error: errors) {
-            System.out.println(error);
-        }
-    }
 
     public ArrayList<String> errors() {
         return errors;
