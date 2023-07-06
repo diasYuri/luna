@@ -7,6 +7,10 @@ import lang.parser.LunaParseAdaptor;
 import lang.parser.ParseAdaptor;
 import lang.parser.TestParser;
 import lang.semantics.TypeChecker;
+import lang.sourcegen.Environment;
+import lang.sourcegen.SourceGenerator;
+
+import java.util.HashMap;
 
 public class LangCompiler{
    // Recupera o nome base (sem extensão) de um arquivo.
@@ -81,6 +85,10 @@ public class LangCompiler{
 	      // iv = new PPrint();
               //result.accept(iv);
               //((PPrint)iv).print();
+          }
+          else if(args[0].equals("-g") ){
+              var sg = new SourceGenerator("teste", "lang/sourcegen/templates/csharp.stg", new Environment(new HashMap<>()));
+              sg.generateCode((RootNode)result);
           }
       }catch(Exception e){
           e.printStackTrace();
