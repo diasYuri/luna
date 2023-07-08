@@ -5,43 +5,50 @@
     .limit stack 10
     .limit locals 10
 
-    ; Definir o número de linhas (nlines)
+    ; Definir as variáveis locais
+    .var 0 is nlines I
+    .var 1 is i I
+    .var 2 is j I
+
+    ; Inicializar nlines
     ldc 5
-    istore_0
+    istore 0  ; nlines
 
-    ; Definir o valor inicial de i
-    iload_0
-    istore_1
+    ; Inicializar i com nlines
+    iload 0  ; nlines
+    istore 1  ; i
 
-    ; Loop externo (iterar nlines vezes)
     outer_loop:
-    iload_0
+    iload 1  ; i
     ifle done_outer_loop
 
-    ; Loop interno (iterar i vezes)
+    ; Inicializar j com 0
+    iconst_0
+    istore 2  ; j
+
     inner_loop:
-    iload_1
-    ifle done_inner_loop
+    iload 2  ; j
+    iload 1  ; i
+    if_icmpge done_inner_loop
 
     ; Imprimir '*'
     getstatic java/lang/System/out Ljava/io/PrintStream;
     ldc "*"
     invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
 
-    ; Decrementar i
-    iinc 1 -1
+    ; Incrementar j
+    iinc 2 1
     goto inner_loop
 
     done_inner_loop:
-    ; Pular para uma nova linha
+    ; Imprimir nova linha
     getstatic java/lang/System/out Ljava/io/PrintStream;
     invokevirtual java/io/PrintStream/println()V
 
-    ; Decrementar nlines
-    iinc 0 -1
+    ; Decrementar i
+    iinc 1 -1
     goto outer_loop
 
     done_outer_loop:
     return
-
 .end method
