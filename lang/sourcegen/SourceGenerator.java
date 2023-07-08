@@ -1,40 +1,40 @@
 package lang.sourcegen;
 
 import lang.ast.RootNode;
-import lang.helpers.TypeHelper;
 import lang.parser.antlr.LunaLangBaseVisitor;
 import lang.parser.antlr.LunaLangParser;
+import lang.semantics.Analyzed;
 import lang.semantics.types.*;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class SourceGenerator extends LunaLangBaseVisitor<ST> {
 
     private final STGroup stGroup;
     private final String fileName;
-    private final TypeHelper typeHelper;
-    private final Environment env;
+    private final HashMap<String, SType> callFuncType;
     private final DeclarationTracking declarationTracking;
 
-    public SourceGenerator(String fileName, String templatePath, Environment env) {
+    public SourceGenerator(String fileName, String templatePath, Analyzed analyzed) {
         this.stGroup = new STGroupFile(templatePath);
         this.fileName = fileName;
-        this.env = env;
-        this.typeHelper = new TypeHelper(env);
-        this.declarationTracking = new DeclarationTracking();
+        this.callFuncType = analyzed.callFuncType();
+        this.declarationTracking = new DeclarationTracking(analyzed.environment());
     }
 
     public void generateCode(RootNode root){
         var prog = root.Ctx().accept(this);
         try {
-            PrintStream ps = new PrintStream("codegen/out/" + this.fileName + ".cs");
+            PrintStream ps = new PrintStream("codegen/out/" + this.fileName + ".java");
             ps.println(prog.render());
 
-            System.out.println("Saída escrita em code_gen/out/" + this.fileName + ".cs");
+            System.out.println("Saída escrita em code_gen/out/" + this.fileName + ".java");
         } catch (Exception e) {
             System.out.println("Algum erro ocorreu ao escrever a saída no arquivo:");
             System.out.println(e.getMessage());
@@ -44,48 +44,114 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
     @Override
     public ST visitProg(LunaLangParser.ProgContext ctx) {
         ST st = this.stGroup.getInstanceOf("program");
-        var funcs = ctx.func().stream().map(x -> x.accept(this)).toList();
-        st.add("funcs", funcs);
+        st.add("funcs", ctx.func().stream().map(x -> x.accept(this)).toList());
+        st.add("datas", ctx.data().stream().map(x -> x.accept(this)).toList());
+        st.add("name", fileName);
         return st;
     }
 
     @Override
+    public ST visitData(LunaLangParser.DataContext ctx) {
+        var st = this.stGroup.getInstanceOf("data");
+        st.add("name", ctx.ID_DATA().getText());
+        st.add("prop", ctx.decl().stream().map(this::visitPropData).toList());
+        return st;
+    }
+    public ST visitPropData(LunaLangParser.DeclContext ctx) {
+        var st = this.stGroup.getInstanceOf("prop");
+        st.add("name", ctx.ID().getText());
+        st.add("type", ctx.type().accept(this));
+        return st;
+    }
+    @Override
     public ST visitFunc(LunaLangParser.FuncContext ctx) {
-        declarationTracking.newScope(false);
-        try {
-            var funcName = ctx.ID().getText();
-            //var paramsList = typeHelper.getParams(ctx.params());
-            //var funcDefinitions = env.getFunc(funcName, paramsList);
+        declarationTracking.entryFuncScope(ctx);
 
-            ST func = this.stGroup.getInstanceOf("func");
 
-            var stmt = ctx.cmd().stream().map(x -> x.accept(this)).toList();
+        ST func = this.stGroup.getInstanceOf("func");
 
-            if(ctx.params() != null){
-                var params = ctx.params().accept(this);
-                func.add("params", params);
-            }
+        var stmt = ctx.cmd().stream().map(x -> x.accept(this)).toList();
 
-            if(ctx.type() != null && ctx.type().size() > 0){
-                var typeReturned = ctx.type().stream().map(x -> x.accept(this)).toList();
-                func.add("type", typeReturned);
-            }else{
-                func.add("type", new ST("void"));
-            }
-
-            func.add("name", ctx.ID().getText());
-            func.add("stmt", stmt);
-            return func;
-        }finally {
-            declarationTracking.popScope();
+        if(ctx.params() != null){
+            var params = ctx.params().accept(this);
+            func.add("params", params);
         }
+
+        if(ctx.type() != null && ctx.type().size() > 0){
+            var typeReturned = ctx.type().stream().map(x -> x.accept(this)).toList();
+            func.add("type", typeReturned);
+        }
+
+        func.add("name", ctx.ID().getText());
+        func.add("stmt", stmt);
+        return func;
+
+    }
+
+    @Override
+    public ST visitCall_attr(LunaLangParser.Call_attrContext ctx) {
+        var st = this.stGroup.getInstanceOf("call_attr");
+        st.add("name", ctx.ID().getText());
+        st.add("args", ctx.parameters.accept(this));
+
+        var term = getRandomString(7);
+        var attrs = new ArrayList<ST>();
+        var i = 0;
+        for (var lvalue: ctx.lvalue()) {
+            var info = this.declarationTracking.getDeclarationInfo(lvalue.getText());
+            var attr = this.stGroup.getInstanceOf("attr2");
+            attr.add("offset", i);
+            attr.add("type",getTypeFrom(info.bValue()));
+            attr.add("val", term);
+            attr.add("name", lvalue.accept(this));
+
+            if(lvalue instanceof LunaLangParser.LvalueIdContext && !info.aValue()){
+                attr.add("decl", true);
+            }
+
+            attrs.add(attr);
+            i++;
+        }
+
+        st.add("attrs", attrs);
+        if(attrs.size()>0) st.add("term", term);
+        return st;
+    }
+
+    @Override
+    public ST visitParams(LunaLangParser.ParamsContext ctx) {
+        var st = this.stGroup.getInstanceOf("params");
+
+        var params = new ArrayList<ST>();
+        for (int i = 0; i < ctx.ID().size(); i++) {
+            var param = this.stGroup.getInstanceOf("param");
+            param.add("type", ctx.type(i).accept(this));
+            param.add("name", ctx.ID(i).getText());
+            params.add(param);
+        }
+
+        st.add("params", params);
+        return st;
+    }
+
+    @Override
+    public ST visitDecl(LunaLangParser.DeclContext ctx) {
+        var name = ctx.ID().getText();
+        var type = ctx.type().accept(this);
+        this.declarationTracking.getDeclarationInfo(name);
+
+        var st = this.stGroup.getInstanceOf("decl");
+        st.add("var", name);
+        st.add("type", type);
+
+        return st;
     }
 
     @Override
     public ST visitCmdscope(LunaLangParser.CmdscopeContext ctx) {
-        declarationTracking.newScope(true);
+        declarationTracking.newBlockScope();
         var cmds = ctx.cmd().stream().map(x -> x.accept(this)).toList();
-        declarationTracking.popScope();
+        declarationTracking.popBlockScope();
         var st = this.stGroup.getInstanceOf("scope");
         st.add("stmt", cmds);
         return st;
@@ -129,6 +195,7 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
         var st = this.stGroup.getInstanceOf("while");
         st.add("expr", ctx.exp().accept(this));
         st.add("stmt", ctx.cmd().accept(this));
+        st.add("val", getRandomString(6));
         return st;
     }
 
@@ -158,7 +225,7 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
 
         st.add("var", ctx.lvalue().accept(this));
         st.add("expr", ctx.exp().accept(this));
-        st.add("type", getTypeFrom(info.bValue()));
+        if(info.bValue() != null) st.add("type", getTypeFrom(info.bValue()));
 
         return st;
     }
@@ -169,15 +236,25 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
         st.add("name", ctx.ID().getText());
         st.add("args", ctx.parameters.accept(this));
         st.add("offset", ctx.offset.accept(this));
-        st.add("type", "TODO");
+        st.add("type", getTypeFrom(callFuncType.get(ctx.getText())));
         return st;
     }
-
     @Override
     public ST visitNew(LunaLangParser.NewContext ctx) {
-        if(ctx.arr_exp == null) return null;
+        if(ctx.arr_exp == null) {
+            var st = this.stGroup.getInstanceOf("new");
+            st.add("type", ctx.type().accept(this));
+            return st;
+        }
         var st = this.stGroup.getInstanceOf("new_array");
-        st.add("type", ctx.type().accept(this));
+        var type = ctx.type().accept(this).render();
+        var init = type.indexOf('[');
+        if(init>0){
+            st.add("type", type.substring(0, init));
+            st.add("typearr", type.substring(init));
+        }else{
+            st.add("type", type);
+        }
         st.add("expr", ctx.arr_exp.accept(this));
         return st;
     }
@@ -199,18 +276,12 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
 
     @Override
     public ST visitLvalueAccess(LunaLangParser.LvalueAccessContext ctx) {
-        var st = this.stGroup.getInstanceOf("exps");
-        st.add("type", ctx.lvalue().accept(this));
-        st.add("expr", ctx.ID().getText());
-        return st;
+        return new ST(ctx.getText());
     }
 
     @Override
     public ST visitLvalueArr(LunaLangParser.LvalueArrContext ctx) {
-        var st = this.stGroup.getInstanceOf("exps");
-        st.add("type", ctx.lvalue().accept(this));
-        st.add("expr", ctx.exp().accept(this));
-        return st;
+        return new ST(ctx.getText());
     }
 
     @Override
@@ -387,4 +458,23 @@ public class SourceGenerator extends LunaLangBaseVisitor<ST> {
         }
         return null;
     }
+
+    private String getRandomString(int n){
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        StringBuilder sb = new StringBuilder(n);
+        sb.append("a");
+        for (int i = 0; i < n; i++) {
+            int index
+                    = (int)(AlphaNumericString.length()
+                    * Math.random());
+
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+        return sb.toString();
+    }
+
 }

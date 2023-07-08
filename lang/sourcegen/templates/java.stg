@@ -1,0 +1,138 @@
+program(funcs, datas, name) ::= <<
+package codegen.out;
+
+<datas; separator="\n\n">
+
+public class <name> {
+    <funcs; separator="\n\n">
+
+    public static void main(String[] args){
+        _main();
+    }
+}
+>>
+
+func(type, name, params, decl, stmt) ::= <<
+static <if(type)>Object[]<else>void<endif> _<name>(<params>)
+{
+    <if(decl)><decl; separator=";\n">;<endif>
+    <stmt; separator="\n">
+}
+>>
+
+param(type, name) ::= "<type> <name>"
+params(params) ::= "<params; separator=\", \">"
+
+while(expr, stmt, val) ::= <<
+for(var <val>=0; <val>\<<expr>; <val>++)
+{
+    <stmt>
+}
+>>
+
+if(expr, stmt, elstmt) ::= <<
+if(<expr>)
+{
+    <stmt; separator="\n">
+} <if(elstmt)>else {
+    <elstmt; separator="\n">
+}
+<endif>
+>>
+
+array(name, array) ::= "<name><array>"
+
+
+// new
+new_array(type, typearr, expr) ::= "new <type>[<expr>]<typearr>"
+new(type) ::= "new <type>()"
+
+// call
+call(name, args) ::= <<_<name>(<args; separator=", ">)>>
+call_value(name, args, offset, type) ::= <<(<type>)(_<name>(<args; separator=", ">)[<offset>])>>
+
+call_attr(name, args, attrs, term) ::= <<
+<if(term)>var <term> = <endif>_<name>(<args; separator=", ">);
+<attrs; separator="\n">
+>>
+
+attr2(name, type, val, offset, decl) ::= <<
+<if(decl)>var<endif> <name> = (<type>)(<val>[<offset>]);
+>>
+
+
+// Return
+return(expr) ::= <<return new Object[]{ <expr> };>>
+
+
+// IO
+
+print(expr) ::= "System.out.print(<expr>);"
+read_decl(var) ::= "var <var> = Integer.valueOf(System.console().readLine());"
+read(var) ::= "<var> = Integer.valueOf(System.console().readLine());"
+
+// Scope
+scope(stmt) ::= <<
+{
+    <stmt; separator="\n">
+}
+>>
+
+// Declaration / Attribute
+attr(var, expr, type) ::= "<var> = <if(type)>(<type>)<endif> <expr>;"
+decl_attr(var, expr, type) ::= "var <var> = <if(type)>(<type>)<endif> <expr>;"
+decl(var, type) ::= "<type> <var>;"
+
+// Access
+array_access(type, expr) ::= "<type>[<expr>]"
+data_access(type, id) ::= "<type>.<id>"
+
+// Exps
+exps(exp) ::= << <exp; separator=", "> >>
+
+tuple(exp) ::= "(<exp>)"
+mul_expr(left_expr, right_expr) ::= "(<left_expr> * <right_expr>)"
+div_expr(left_expr, right_expr) ::= "(<left_expr> / <right_expr>)"
+mod_expr(left_expr, right_expr) ::= "(<left_expr> % <right_expr>)"
+add_expr(left_expr, right_expr) ::= "(<left_expr> + <right_expr>)"
+sub_expr(left_expr, right_expr) ::= "(<left_expr> - <right_expr>)"
+
+lt_expr(left_expr, right_expr) ::= "(<left_expr> \< <right_expr>)"
+equals_expr(left_expr, right_expr) ::= "(<left_expr> == <right_expr>)"
+and_expr(left_expr, right_expr) ::= "(<left_expr> && <right_expr>)"
+
+not_expr(expr) ::= "!<expr>"
+minus_expr(expr) ::= "- <expr>"
+
+
+// Types
+array_type(type) ::= "<type>[]"
+int_type() ::= "Integer"
+float_type() ::= "Float"
+boolean_type() ::= "Boolean"
+char_type() ::= "Character"
+
+
+// Value
+true_value() ::= "true"
+false_value() ::= "false"
+null_value() ::= "null"
+float_expr(value) ::= "<value>f"
+int_expr(value) ::= "<value>"
+char_expr(value) ::= "<value>"
+
+// Data
+data(name, prop) ::= <<
+class <name>
+{
+    <prop; separator="\n">
+}
+>>
+
+prop(type, name) ::= "public <type> <name>;"
+
+
+
+
+
+

@@ -11,7 +11,7 @@ public class LunaChar {
 
     @Override
     public String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 
     public static LunaChar parse(String $char){
@@ -34,4 +34,6 @@ public class LunaChar {
             put("'\\t'", '\t');
         }
     };
+
+    public Character getValue(){return this.value;}
 }

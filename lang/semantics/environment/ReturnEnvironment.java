@@ -1,4 +1,4 @@
-package lang.semantics;
+package lang.semantics.environment;
 
 import lang.semantics.helpers.Comparer;
 import lang.semantics.types.SType;

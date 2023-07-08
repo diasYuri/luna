@@ -1,14 +1,12 @@
 package lang.semantics;
 
+import lang.semantics.environment.SEnvironment;
+import lang.semantics.types.SType;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Analyzed {
-    private ArrayList<String> errors;
-
-    public Analyzed(ArrayList<String> errors) {
-        this.errors = errors;
-    }
-
+public record Analyzed(ArrayList<String> errors, SEnvironment environment, HashMap<String, SType> callFuncType) {
     public void showErrors(){
         for (var error: errors) {
             System.out.println(error);

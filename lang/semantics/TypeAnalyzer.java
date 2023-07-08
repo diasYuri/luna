@@ -3,6 +3,9 @@ package lang.semantics;
 import lang.interpreter.exceptions.LunaRuntimeException;
 import lang.parser.antlr.LunaLangBaseVisitor;
 import lang.parser.antlr.LunaLangParser;
+import lang.semantics.environment.FunctionsMap;
+import lang.semantics.environment.ReturnEnvironment;
+import lang.semantics.environment.SEnvironment;
 import lang.semantics.types.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -17,11 +20,12 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
     private final FunctionsMap functionsMap = new FunctionsMap();
     private final SEnvironment env = new SEnvironment();
     private final ReturnEnvironment rEnv = new ReturnEnvironment();
+    private final HashMap<String, SType> callFuncType = new HashMap<>();
 
     public Analyzed Analyzer(ParserRuleContext root){
         notificator.clear();
         root.accept(this);
-        return new Analyzed(notificator.errors());
+        return new Analyzed(notificator.errors(), env, callFuncType);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
 
     @Override
     public Object visitFunc(LunaLangParser.FuncContext ctx) {
-        env.pushScope();
+        env.newScopeFunc(ctx);
 
         var returns = new ArrayList<SType>();
         for (var type : ctx.type()) returns.add((SType) type.accept(this));
@@ -70,7 +74,7 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
         }
 
         rEnv.popFunc();
-        env.popScope();
+        env.popScopeFunc();
         return null;
     }
 
@@ -91,7 +95,9 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
         for (var type : ctx.type()) {
             returns.add((SType) type.accept(this));
         }
+
         var success = functionsMap.put(name, params, returns);
+
         if(!success){
             notificator.addError(String.format("A função %s já foi definida", name), ctx);
         }
@@ -134,14 +140,30 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
                 if(func.returns() == null){
                     notificator.addError("A função chamada não possui retorno", ctx);
                 }
-                if(intOffset >= func.returns().size()){
+                else if(intOffset >= func.returns().size()){
                     notificator.addError(String.format("A função chamada não possui retorno no offset %d", intOffset), ctx);
                 }
-                return func.returns().get(intOffset);
+                else{
+                    var typeR = func.returns().get(intOffset);
+                    callFuncType.put(ctx.getText(), typeR);
+                    return typeR;
+                }
             }
         }
 
         return STypeDynamic.instance();
+    }
+
+    @Override
+    public Object visitRead(LunaLangParser.ReadContext ctx) {
+        var typePointer = (SType)getLvalue(ctx.lvalue());
+
+        if(!(ctx.lvalue() instanceof LunaLangParser.LvalueIdContext))
+        {
+            env.attribute(ctx.lvalue().getText(), typePointer);
+        }
+
+        return attribute(typePointer, STypeInt.getInstance(), ctx);
     }
 
     @Override
@@ -269,6 +291,11 @@ public class TypeAnalyzer extends LunaLangBaseVisitor<Object> {
         var value = (SType)ctx.exp().accept(this);
 
         var typePointer = (SType)getLvalue(ctx.lvalue());
+
+        if(!(ctx.lvalue() instanceof LunaLangParser.LvalueIdContext))
+        {
+            env.attribute(ctx.lvalue().getText(), typePointer);
+        }
 
         return attribute(typePointer, value, ctx);
     }
