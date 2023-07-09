@@ -1,0 +1,31 @@
+group jasmin;
+
+program(name, funcs) ::= <<
+.source <name>
+.class public <name>
+.super java/lang/Object
+
+    <funcs; separator="\n\n">
+
+    .method public static main([Ljava/lang/String;)V
+        .limit stack 1
+        invokestatic <name>/_main()I
+        return
+    .end method
+>>
+
+func(return, name, params, decls, stack, stmt) ::= <<
+.method static _<name>(<params>)<if(return)>[Ljava/lang/Object<else>V<endif>;
+    .limit stack <stack>
+    .limit locals <decls>
+    <stmt>
+.end method
+>>
+
+
+// op
+op(left_expr, right_expr, operator) ::= <<
+<left_expr>
+<right_expr>
+<operator>
+>>

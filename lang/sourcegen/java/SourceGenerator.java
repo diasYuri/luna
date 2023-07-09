@@ -1,10 +1,11 @@
-package lang.sourcegen;
+package lang.sourcegen.java;
 
 import lang.ast.RootNode;
 import lang.parser.antlr.LunaLangBaseVisitor;
 import lang.parser.antlr.LunaLangParser;
 import lang.semantics.Analyzed;
 import lang.semantics.types.*;
+import lang.sourcegen.DeclarationTracking;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;

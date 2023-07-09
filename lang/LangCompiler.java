@@ -7,7 +7,7 @@ import lang.parser.LunaParseAdaptor;
 import lang.parser.ParseAdaptor;
 import lang.parser.TestParser;
 import lang.semantics.TypeChecker;
-import lang.sourcegen.SourceGenerator;
+import lang.sourcegen.java.SourceGenerator;
 
 public class LangCompiler{
    // Recupera o nome base (sem extensão) de um arquivo.
@@ -25,12 +25,15 @@ public class LangCompiler{
           System.out.println(" -pp: Pretty print program.");
           System.out.println(" -tp: Verficar tipos e imprimir o ambiente de tipos");
           System.out.println(" -i : Apenas interpretar");
-          
+
+
           System.out.println(" -ti: Verificar tipos e depois interpretar");
           System.out.println(" -dti: Verificar tipos, imprimir o ambiente de tipos e depois interpretar");
           System.out.println(" -gvz: Create a dot file. (Feed it to graphviz dot tool to generate graphical representation of the AST)");
-          
+
+          System.out.println(" -g: Gera código Java");
        }
+
        try{
            ParseAdaptor langParser = new LunaParseAdaptor();
           
@@ -84,13 +87,21 @@ public class LangCompiler{
               //((PPrint)iv).print();
           }
           else if(args[0].equals("-g") ){
+              String filename = getNameFile(args[1]);
               var analized = TypeChecker.check((RootNode)result, true);
-              var sg = new SourceGenerator("teste", "lang/sourcegen/templates/java.stg", analized);
+              if(analized.hasError()) return;
+              var sg = new SourceGenerator(filename, "lang/sourcegen/templates/java.stg", analized);
               sg.generateCode((RootNode)result);
           }
       }catch(Exception e){
           e.printStackTrace();
       }
+   }
+
+   static String getNameFile(String path){
+         var parts = path.split("/");
+         var name = parts[parts.length - 1];
+         return name.substring(0, name.indexOf("."));
    }
 }
  

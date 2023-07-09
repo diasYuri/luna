@@ -52,4 +52,3 @@ public class DeclarationTracking {
         return new Pair<>(value, type);
     }
 }
-record Pair<a, b>(a aValue, b bValue){}
